@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YBÜ İzlem Paneli v4</title>
+    <title>YBÜ İzlem Paneli v5</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
@@ -27,6 +27,7 @@
         .btn-delete { background: #dc3545; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         td { padding: 10px; border-bottom: 1px solid #eee; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -85,7 +86,7 @@
             <label><input type="radio" name="solTuru" value="NIMV"> NIMV</label>
             <label><input type="radio" name="solTuru" value="IMV"> IMV</label>
         </div>
-        <div class="radio-group" style="background: #fff4e5;">
+        <div id="imvBox" class="radio-group" style="background: #fff4e5;">
             <label><input type="radio" name="vMod" value="AC/PRVC"> AC/PRVC</label>
             <label><input type="radio" name="vMod" value="CPAP"> CPAP</label>
             <label><input type="radio" name="vMod" value="PSV"> PSV</label>
@@ -127,6 +128,7 @@
             <label>Gaita:</label>
             <label><input type="radio" name="gaita" value="Normal"> Norm</label>
             <label><input type="radio" name="gaita" value="Diyare"> Diya</label>
+            <label><input type="radio" name="gaita" value="Melena"> Melena</label>
             <label><input type="radio" name="gaita" value="Yok"> Yok</label>
             <input type="text" id="gaitaGun" placeholder="Gün" style="width:50px;">
         </div>
@@ -152,7 +154,7 @@
     <div class="row" style="grid-template-columns: 1fr 1fr 1fr;">
         <input type="text" id="af" placeholder="Antifungal">
         <input type="text" id="av" placeholder="Antiviral">
-        <div class="radio-group"><label><input type="radio" name="renal" value="Spontan"> Spon</label><label><input type="radio" name="renal" value="HD"> HD</label></div>
+        <div class="radio-group"><label><input type="radio" name="renal" value="Spontan"> Spon</label><label><input type="radio" name="renal" value="HD"> HD</label><label><input type="radio" name="renal" value="CRRT"> CRRT</label></div>
     </div>
     <div class="row" style="grid-template-columns: 1.5fr 1fr;">
         <input type="text" id="siviDenge" placeholder="Sıvı Dengesi (Aldığı/Çıkardığı)">
@@ -227,53 +229,89 @@
         if (hastaListesi.length === 0) return alert('Boş!');
         let h = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body style='font-family:Arial; font-size:10pt;'>";
         let c = "<h2>YBÜ VİZİT RAPORU</h2><br>";
+        
         hastaListesi.forEach(x => {
             c += `<p><b>HASTA: ${x.yatak} / ${x.id}</b> - ${x.tarih} ${x.saat}</p>`;
-            if(x.hb||x.wbc) c += `<p><b>Laboratuvar:</b> Hb: ${x.hb} g/dL, WBC: ${x.wbc} /µL, PLT: ${x.plt} /µL, Kreatinin: ${x.krea} mg/dL, Prokalsitonin: ${x.pro} ng/mL ${x.digL ? '('+x.digL+')' : ''}</p>`;
-            if(x.at||x.kb) c += `<p><b>Vitaller:</b> Ateş: ${x.at}°C, Nabız: ${x.nb}/dk, Kan Basıncı: ${x.kb}, SpO2: %${x.sp}. ${x.vazo ? 'Vazopressör desteği: '+x.vazo : ''}</p>`;
             
-            let solStr = `<b>Solunum:</b> `;
-            if(x.akc === 'Ral') solStr += "Akciğer seslerinde ralleri var. ";
-            else if(x.akc) solStr += "Akciğer sesleri " + x.akc + ". ";
-            if(x.sek) solStr += "Sekresyon: " + x.sek + ". ";
-            if(x.solT) {
-                if(x.solT === 'IMV') solStr += "IMV desteğinde; Mod: " + (x.vMod || 'Belirtilmedi');
-                else solStr += x.solT + " desteğinde.";
+            // Lab
+            if(x.hb || x.wbc || x.plt || x.krea || x.pro) {
+                let labStr = "<b>Laboratuvar:</b> ";
+                if(x.hb) labStr += `Hb: ${x.hb} g/dL, `;
+                if(x.wbc) labStr += `WBC: ${x.wbc} /µL, `;
+                if(x.plt) labStr += `PLT: ${x.plt} /µL, `;
+                if(x.krea) labStr += `Kreatinin: ${x.krea} mg/dL, `;
+                if(x.pro) labStr += `Prokalsitonin: ${x.pro} ng/mL, `;
+                if(x.digL) labStr += `(${x.digL}), `;
+                c += `<p>${labStr.replace(/, $/, "")}</p>`;
             }
-            c += `<p>${solStr}</p>`;
 
-            let noroStr = `<b>Nöroloji:</b> Bilinç ${x.bil || 'belirtilmedi'}. `;
-            if(x.gks) noroStr += "GKS: " + x.gks + ". ";
-            if(x.pup) noroStr += "Pupiller " + x.pup + (x.pupA ? ' ('+x.pupA+')' : '') + ". ";
-            if(x.sed) noroStr += x.sed + " infüzyonu altında.";
-            c += `<p>${noroStr}</p>`;
+            // Vital
+            if(x.at || x.nb || x.kb || x.sp || x.vazo) {
+                let vitStr = "<b>Vitaller:</b> ";
+                if(x.at) vitStr += `Ateş: ${x.at}°C, `;
+                if(x.nb) vitStr += `Nabız: ${x.nb}/dk, `;
+                if(x.kb) vitStr += `Kan Basıncı: ${x.kb}, `;
+                if(x.sp) vitStr += `SpO2: %${x.sp}, `;
+                if(x.vazo) vitStr += `Vazopressör desteği: ${x.vazo}, `;
+                c += `<p>${vitStr.replace(/, $/, "")}</p>`;
+            }
 
-            let muayStr = `<b>Muayene:</b> `;
-            if(x.bs) muayStr += "Bağırsak sesleri " + x.bs + ". ";
-            if(x.gaita) muayStr += "Gaita " + x.gaita + (x.gaiG ? ' ('+x.gaiG+'. günü)' : '') + ". ";
-            if(x.ekst) muayStr += "Ekstremiteler " + x.ekst + (x.eksA ? ' ('+x.eksA+')' : '') + ". ";
-            c += `<p>${muayStr}</p>`;
+            // Solunum
+            let solStr = "<b>Solunum:</b> ";
+            if(x.akc === "Ral") solStr += "Akciğer seslerinde ralleri var. ";
+            else if(x.akc) solStr += `Akciğer sesleri ${x.akc}. `;
+            if(x.sek) solStr += `Sekresyon: ${x.sek}. `;
+            if(x.solT) {
+                if(x.solT === "IMV") solStr += `IMV desteğinde; Mod: ${x.vMod || "Belirtilmedi"}. `;
+                else solStr += `${x.solT} desteğinde. `;
+            }
+            if(solStr !== "<b>Solunum:</b> ") c += `<p>${solStr}</p>`;
 
-            let renalStr = `<b>Renal & Beslenme:</b> `;
-            if(x.renal) renalStr += (x.renal === 'Spontan' ? 'Spontan idrar çıkışı var. ' : x.renal + ' uygulanıyor. ');
-            if(x.sivi) renalStr += "Sıvı dengesi: " + x.sivi + ". ";
-            if(x.kanama) renalStr += "Kanama mevcut: " + x.kanama + ". ";
-            if(x.bes) renalStr += x.bes + " besleniyor" + (x.besD ? ' ('+x.besD+')' : '') + ". ";
-            c += `<p>${renalStr}</p>`;
+            // Nöroloji
+            let noroStr = "<b>Nöroloji:</b> ";
+            if(x.bil) noroStr += `Bilinç ${x.bil}. `;
+            if(x.gks) noroStr += `GKS: ${x.gks}. `;
+            if(x.pup) noroStr += `Pupiller ${x.pup}${x.pupA ? " ("+x.pupA+")" : ""}. `;
+            if(x.sed) noroStr += `${x.sed} infüzyonu altında. `;
+            if(noroStr !== "<b>Nöroloji:</b> ") c += `<p>${noroStr}</p>`;
 
-            let enfStr = `<b>Enfeksiyon:</b> `;
-            if(x.odak) enfStr += "Odak: " + x.odak + ". ";
-            let abs = [x.ab1, x.ab2, x.ab3, x.af, x.av].filter(a => a).join(', ');
-            enfStr += abs ? "Tedavi: " + abs : "Antibiyoterapi almıyor.";
+            // Muayene
+            let muayStr = "<b>Muayene:</b> ";
+            if(x.bs) muayStr += `Bağırsak sesleri ${x.bs}. `;
+            if(x.gaita) muayStr += `Gaita ${x.gaita}${x.gaiG ? " ("+x.gaiG+". günü)" : ""}. `;
+            if(x.ekst) muayStr += `Ekstremiteler ${x.ekst}${x.eksA ? " ("+x.eksA+")" : ""}. `;
+            if(muayStr !== "<b>Muayene:</b> ") c += `<p>${muayStr}</p>`;
+
+            // Renal & Beslenme
+            let rbStr = "<b>Renal & Beslenme:</b> ";
+            if(x.renal) {
+                if(x.renal === "Spontan") rbStr += "Spontan idrar çıkışı var. ";
+                else rbStr += `${x.renal} uygulanıyor. `;
+            }
+            if(x.sivi) rbStr += `Sıvı dengesi: ${x.sivi}. `;
+            if(x.kanama) rbStr += `Kanama mevcut (${x.kanama} cc). `;
+            if(x.bes) rbStr += `${x.bes} besleniyor${x.besD ? " ("+x.besD+")" : ""}. `;
+            if(rbStr !== "<b>Renal & Beslenme:</b> ") c += `<p>${rbStr}</p>`;
+
+            // Enfeksiyon
+            let enfStr = "<b>Enfeksiyon:</b> ";
+            if(x.odak) enfStr += `Odak: ${x.odak}. `;
+            let abList = [x.ab1, x.ab2, x.ab3, x.af, x.av].filter(a => a).join(", ");
+            if(abList) enfStr += `Tedavi: ${abList}. `;
+            else enfStr += "Antibiyoterapi almıyor. ";
             c += `<p>${enfStr}</p>`;
 
-            let planStr = `<b>Plan:</b> `;
-            if(x.anti) planStr += "Antikoagülasyon: " + x.anti + ", ";
-            if(x.ulser) planStr += "Ülser Profilaksisi: " + x.ulser + ", ";
-            if(x.kons) planStr += x.kons + " birimine danışıldı/konsülte edildi. ";
-            if(x.plan) planStr += "Notlar: " + x.plan;
-            c += `<p>${planStr.replace(/, $/, '')}</p><hr>`;
+            // Plan
+            let planStr = "<b>Plan:</b> ";
+            if(x.anti) planStr += `Antikoagülasyon: ${x.anti}, `;
+            if(x.ulser) planStr += `Ülser Profilaksisi: ${x.ulser}, `;
+            if(x.kons) planStr += `${x.kons} birimine danışıldı/konsülte edildi. `;
+            if(x.plan) planStr += `Notlar: ${x.plan}. `;
+            if(planStr !== "<b>Plan:</b> ") c += `<p>${planStr.replace(/, $/, "")}</p>`;
+
+            c += "<hr>";
         });
+        
         const blob = new Blob([h + c + "</body></html>"], { type: 'application/msword' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a'); a.href = url; a.download = "YBU_Vizit_Raporu.doc";
