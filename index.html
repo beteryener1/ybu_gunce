@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YBÜ İzlem Paneli v12 (Mobil)</title>
+    <title>YBÜ İzlem Paneli v14</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
@@ -49,9 +49,7 @@
         <label><input type="radio" name="bilinc" value="Koma"> Koma</label>
         <input type="number" id="gks" placeholder="GKS" style="width:50px; margin-left:5px;">
     </div>
-    <div class="row" style="margin-top:5px;">
-        <input type="text" id="sedasyonInfo" placeholder="Sedasyon ve Dozu (Örn: Dormicum 2mg/st)">
-    </div>
+    <div class="row" style="margin-top:5px;"><input type="text" id="sedasyonInfo" placeholder="Sedasyon ve Dozu"></div>
     <div class="check-group" style="margin-top:5px;">
         <label>Pupiller:</label>
         <label><input type="radio" name="pupil" value="İzokorik"> İzo</label>
@@ -71,7 +69,7 @@
     </div>
     <input type="text" id="labDiger" placeholder="Diğer lab (CRP, Laktat vb.)" style="margin-top:5px;">
 
-    <h3>💉 Vazopressörler (2x2)</h3>
+    <h3>💉 Vazopressörler</h3>
     <div class="vazo-grid">
         <div class="vazo-box"><label><input type="checkbox" id="c_nor"> Norad.</label><input type="number" step="0.01" id="d_nor"><span>mcg/kg/d</span></div>
         <div class="vazo-box"><label><input type="checkbox" id="c_dop"> Dopam.</label><input type="number" step="0.1" id="d_dop"><span>mg/kg/d</span></div>
@@ -86,18 +84,19 @@
         <label><input type="checkbox" name="akc" value="Ronküs"> Ronküs</label>
         <label><input type="checkbox" name="akc" value="Azalmış"> Azalmış</label>
     </div>
-    <div class="row" style="margin-top:5px;"><input type="text" id="sekresyon" placeholder="Sekresyon detayı"></div>
+    <input type="text" id="sekresyon" placeholder="Sekresyon detayı" style="margin-top:5px;">
     <div class="check-group" style="margin-top:5px;">
         <label><input type="radio" name="solTuru" value="Spontan"> Spontan</label>
         <label><input type="radio" name="solTuru" value="Nazal"> Nazal</label>
         <label><input type="radio" name="solTuru" value="HFNO"> HFNO</label>
+        <label><input type="radio" name="solTuru" value="CPAP"> CPAP</label>
         <label><input type="radio" name="solTuru" value="IMV" id="imvCheck"> IMV</label>
     </div>
     <div id="imvModBox" class="hidden check-group" style="background:#fff3cd; margin-top:5px;">
         <label><input type="radio" name="vMod" value="AC/PRVC"> AC/PRVC</label>
-        <label><input type="radio" name="vMod" value="CPAP"> CPAP</label>
         <label><input type="radio" name="vMod" value="PSV"> PSV</label>
         <label><input type="radio" name="vMod" value="SIMV"> SIMV</label>
+        <label><input type="radio" name="vMod" value="CPAP"> CPAP</label>
     </div>
 
     <h3>腹 Abdomen & Barsak Sesleri</h3>
@@ -141,9 +140,9 @@
     </div>
 
     <h3>📋 Plan</h3>
-    <input type="text" id="anti" placeholder="Antikoagülasyon (Örn: Enox 1x0.4)">
-    <input type="text" id="kons" placeholder="Konsültasyonlar (Örn: Nefro, Kardiyo)">
-    <textarea id="plan" rows="2" placeholder="Notlar..." style="margin-top:5px;"></textarea>
+    <input type="text" id="anti" placeholder="Antikoagülasyon">
+    <input type="text" id="kons" placeholder="Konsültasyonlar">
+    <textarea id="plan" rows="2" placeholder="Notlar..."></textarea>
 
     <div class="btn-group">
         <button class="btn" style="background:#28a745" onclick="kaydet()">KAYDET</button>
@@ -162,7 +161,7 @@
         const now = new Date();
         document.getElementById('tarih').value = now.toISOString().split('T')[0];
         document.getElementById('saat').value = now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
-        const stored = localStorage.getItem('ybu_v12');
+        const stored = localStorage.getItem('ybu_v14');
         if (stored) { hastaListesi = JSON.parse(stored); listeGuncelle(); }
     });
 
@@ -197,7 +196,7 @@
         };
         if(!v.yatak && !v.id) return alert('Veri girin!');
         hastaListesi.push(v);
-        localStorage.setItem('ybu_v12', JSON.stringify(hastaListesi));
+        localStorage.setItem('ybu_v14', JSON.stringify(hastaListesi));
         listeGuncelle();
         formuTemizle();
     }
@@ -222,32 +221,31 @@
             if(x.vazo.adr.c) vStr.push(`Adrenalin (${x.vazo.adr.d} mcg/kg/d)`);
             if(vStr.length) doc += `<p><b>Vazopressör Desteği:</b> ${vStr.join(', ')} infüzyonu alıyor.</p>`;
 
-            let akcSes = x.akc.includes('Ral') ? 'Akciğer seslerinde ralleri var' : 'Akciğer sesleri ' + x.akc.join(', ');
-            doc += `<p><b>Solunum:</b> ${akcSes}. ${x.sek ? 'Sekresyon: '+x.sek : ''}. `;
-            if(x.solT === 'IMV') doc += `IMV desteğinde; Mod: ${x.vMod}.`; else doc += `${x.solT} desteğinde.`;
-            doc += "</p>";
+            let akcSes = x.akc.length > 0 ? (x.akc.includes('Ral') ? 'Akciğer seslerinde ralleri var' : 'Akciğer sesleri ' + x.akc.join(', ')) : 'Akciğer sesleri doğal';
+            let solEki = x.solT === 'Spontan' ? 'solunumda' : 'desteğinde';
+            doc += `<p><b>Solunum:</b> ${akcSes}. ${x.sek ? 'Sekresyon: '+x.sek : ''}. ${x.solT || ''} ${solEki}. ${x.vMod ? 'Mod: '+x.vMod : ''}</p>`;
 
-            doc += `<p><b>Nöroloji:</b> Bilinç ${x.bil}. ${x.gks ? 'GKS: '+x.gks : ''}. Pupiller ${x.pup}. ${x.sed ? x.sed + ' infüzyonu altında.' : ''}</p>`;
-            doc += `<p><b>Muayene:</b> Barsak sesleri ${x.bs === 'Normoaktif' ? 'normoaktiftir' : x.bs}. Gaita ${x.gai} (${x.gaiG ? x.gaiG+'. günü' : ''}).</p>`;
+            doc += `<p><b>Nöroloji:</b> Bilinç ${x.bil || ''}. ${x.gks ? 'GKS: '+x.gks : ''}. Pupiller ${x.pup || ''}. ${x.sed ? x.sed + ' infüzyonu altında.' : ''}</p>`;
+            doc += `<p><b>Muayene:</b> Barsak sesleri ${x.bs === 'Normoaktif' ? 'normoaktiftir' : x.bs || ''}. Gaita ${x.gai || ''} ${x.gaiG ? '('+x.gaiG+'. günü)' : ''}.</p>`;
             
-            let renalStr = x.renal === 'Spontan' ? 'Spontan idrar çıkışı var.' : `Hasta ${x.renal}'ye girdi.`;
-            doc += `<p><b>Renal & Beslenme:</b> ${renalStr} Sıvı Dengesi: ${x.sivi}. ${x.bes} besleniyor (${x.besD}).</p>`;
+            let renalStr = x.renal === 'Spontan' ? 'Spontan idrar çıkışı var.' : (x.renal ? `Hasta ${x.renal}'ye girdi.` : '');
+            doc += `<p><b>Renal & Beslenme:</b> ${renalStr} Sıvı Dengesi: ${x.sivi || ''}. ${x.bes || ''} besleniyor ${x.besD ? '('+x.besD+')' : ''}.</p>`;
 
             let ilaçar = x.ilaçlar.filter(i => i.n).map(i => `${i.n} (${i.g}. gün)`).join(', ');
-            doc += `<p><b>Enfeksiyon:</b> Odak: ${x.enf}. ${ilaçar ? 'Tedavi: ' + ilaçar + ' aldı.' : 'Antibiyoterapi almıyor.'}</p>`;
+            doc += `<p><b>Enfeksiyon:</b> Odak: ${x.enf || ''}. ${ilaçar ? 'Tedavi: ' + ilaçar + ' aldı.' : 'Antibiyoterapi almıyor.'}</p>`;
             
             let planStr = "";
             if(x.anti) planStr += `${x.anti} aldı. `;
             if(x.kons) planStr += `${x.kons} istendi. `;
             if(x.plan) planStr += `${x.plan}`;
-            doc += `<p><b>Plan:</b> ${planStr}</p><hr>`;
+            doc += `<p><b>Plan:</b> ${planStr}</p>`;
+            doc += `<p><b>Hastanın bakımları yapılmıştır.</b></p><hr>`;
         });
-        doc += "<p style='text-align:center;'><b>Tüm hastalar için bakımları yapıldı.</b></p>";
         let blob = new Blob([doc + "</body></html>"], {type:'application/msword'});
-        let link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "vizit_mobil.doc"; link.click();
+        let link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "vizit_v14.doc"; link.click();
     }
-    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v12', JSON.stringify(hastaListesi)); listeGuncelle(); }
-    function listeSil() { if(confirm('Sil?')) { hastaListesi = []; localStorage.removeItem('ybu_v12'); listeGuncelle(); } }
+    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v14', JSON.stringify(hastaListesi)); listeGuncelle(); }
+    function listeSil() { if(confirm('Sil?')) { hastaListesi = []; localStorage.removeItem('ybu_v14'); listeGuncelle(); } }
     function formuTemizle() { document.querySelectorAll('input[type=text], input[type=number], textarea').forEach(i => i.value=''); document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(r => r.checked = false); }
 </script>
 </body>
