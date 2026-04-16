@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YBÜ İzlem Paneli v6</title>
+    <title>YBÜ İzlem Paneli v7</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
@@ -11,34 +11,25 @@
         .panel { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 1050px; margin: auto; }
         h1 { font-size: 1.4rem; text-align: center; margin: 0 0 12px; color: #1e466e; border-bottom: 2px solid #eee; padding-bottom: 5px; }
         h3 { font-size: 0.9rem; margin: 12px 0 6px; padding: 4px 10px; background: #e9ecef; border-radius: 4px; font-weight: 600; color: #495057; }
-        
         .row { display: grid; gap: 8px; margin-bottom: 8px; align-items: center; }
-        .grid-header { grid-template-columns: 1fr 1fr 1fr 2.5fr; }
+        .grid-header { grid-template-columns: 1fr 1fr 1fr 2fr; }
         .grid-lab { grid-template-columns: repeat(6, 1fr); }
-        .grid-vazo { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-
+        .grid-vazo { grid-template-columns: repeat(4, 1fr); gap: 10px; }
         input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
-        input[type="number"] { -moz-appearance: textfield; }
-        
         .radio-group { display: flex; flex-wrap: wrap; gap: 8px; background: #f8f9fa; padding: 6px 10px; border-radius: 5px; border: 1px solid #dee2e6; }
         .radio-group label { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; font-weight: 500; font-size: 12px; }
         input[type="radio"], input[type="checkbox"] { width: 18px; height: 18px; margin: 0; }
-
-        .vazo-item { display: flex; align-items: center; gap: 5px; background: #fff; border: 1px solid #eee; padding: 4px; border-radius: 5px; }
-        .vazo-item input[type="number"] { width: 70px; }
-        .vazo-item select { width: 110px; padding: 4px; font-size: 11px; }
-
+        .vazo-item { display: flex; flex-direction: column; gap: 4px; background: #fff; border: 1px solid #eee; padding: 6px; border-radius: 5px; align-items: center; }
+        .vazo-item span { font-size: 10px; color: #666; font-weight: bold; }
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .btn { padding: 12px; border: none; border-radius: 25px; color: white; font-weight: bold; cursor: pointer; font-size: 15px; }
         .btn-save { background: #28a745; }
         .btn-clear { background: #6c757d; }
         .btn-word { background: #0d6efd; }
         .btn-delete { background: #dc3545; }
-        
         .list-area { margin-top: 15px; border-top: 2px solid #eee; }
         table { width: 100%; border-collapse: collapse; }
         td { padding: 8px; border-bottom: 1px solid #eee; }
-        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -50,7 +41,7 @@
         <input type="date" id="tarih">
         <input type="time" id="saat">
         <input type="text" id="yatakNo" placeholder="Yatak No">
-        <input type="text" id="hastaID" placeholder="Hasta ID / Ad Soyad">
+        <input type="number" id="hastaID" placeholder="Hasta No (Sayı)">
     </div>
 
     <h3>🔬 Laboratuvar (Hb, WBCx1000, PLTx1000, Krea, Prok, Albümin)</h3>
@@ -62,29 +53,28 @@
         <input type="number" step="0.01" id="labPro" placeholder="Prok">
         <input type="number" step="0.1" id="labAlb" placeholder="Albümin">
     </div>
-    <input type="text" id="labDiger" placeholder="Diğer Lab Bulguları (CRP, Laktat vb.)" style="margin-top:5px;">
 
-    <h3>💉 Vazopressör Desteği</h3>
+    <h3>💉 Vazopressör Desteği (kg/dk)</h3>
     <div class="row grid-vazo">
         <div class="vazo-item">
             <label><input type="checkbox" id="check_nor"> Norad.</label>
             <input type="number" step="0.01" id="dose_nor" placeholder="Doz">
-            <select id="unit_nor"><option>mcg/kg/dk</option><option>mcg/dk</option><option>mg/st</option></select>
+            <span>mcg/kg/dk</span>
         </div>
         <div class="vazo-item">
             <label><input type="checkbox" id="check_dop"> Dopamin</label>
             <input type="number" step="0.1" id="dose_dop" placeholder="Doz">
-            <select id="unit_dop"><option>mg/kg/dk</option><option>mcg/kg/dk</option></select>
+            <span>mg/kg/dk</span>
         </div>
         <div class="vazo-item">
             <label><input type="checkbox" id="check_dob"> Dobutam.</label>
             <input type="number" step="0.1" id="dose_dob" placeholder="Doz">
-            <select id="unit_dob"><option>mg/kg/dk</option><option>mcg/kg/dk</option></select>
+            <span>mg/kg/dk</span>
         </div>
         <div class="vazo-item">
             <label><input type="checkbox" id="check_adr"> Adrenal.</label>
             <input type="number" step="0.01" id="dose_adr" placeholder="Doz">
-            <select id="unit_adr"><option>mcg/kg/dk</option><option>mcg/dk</option></select>
+            <span>mcg/kg/dk</span>
         </div>
     </div>
 
@@ -124,7 +114,7 @@
             <label><input type="radio" name="bilinc" value="Stupor"> Stupor</label>
             <input type="number" id="gks" placeholder="GKS" style="width: 60px; margin-left: 5px;">
         </div>
-        <input type="text" id="sedasyon" placeholder="Sedasyon İlacı & İnfüzyon">
+        <input type="text" id="sedasyon" placeholder="Sedasyon İlacı & İnfüzyonu">
     </div>
     <div class="row" style="grid-template-columns: 2fr 1fr;">
         <div class="radio-group">
@@ -159,7 +149,6 @@
             <label><input type="radio" name="ekst" value="Patol"> Patol</label>
         </div>
     </div>
-    <input type="text" id="ekstAciklama" placeholder="Ekstremite bulgu detayı" style="margin-bottom:5px;">
 
     <h3>🦠 Enfeksiyon & Renal & Beslenme</h3>
     <div class="row" style="grid-template-columns: 1fr 2fr;">
@@ -167,7 +156,7 @@
         <div class="row" style="grid-template-columns: repeat(3, 1fr); margin-bottom:0;">
             <input type="text" id="ab1" placeholder="AB 1">
             <input type="text" id="ab2" placeholder="AB 2">
-            <input type="text" id="ab3" placeholder="AB 3 / AF / AV">
+            <input type="text" id="ab3" placeholder="AB 3">
         </div>
     </div>
     <div class="row" style="grid-template-columns: 1.2fr 1.5fr 1.3fr;">
@@ -186,13 +175,13 @@
         <input type="text" id="besDoz" placeholder="Doz / İçerik">
     </div>
 
-    <h3>📋 Plan & Tedavi</h3>
-    <div class="row" style="grid-template-columns: 1fr 1fr 1.5fr;">
-        <input type="text" id="anti" placeholder="Antikoagülasyon">
+    <h3>📋 Plan</h3>
+    <div class="row" style="grid-template-columns: 1fr 1fr 1fr;">
+        <input type="text" id="anti" placeholder="Antikoagülan">
         <input type="text" id="ulser" placeholder="Ülser Prof.">
         <input type="text" id="kons" placeholder="Konsültasyonlar">
     </div>
-    <textarea id="plan" rows="2" placeholder="Genel Plan ve Notlar"></textarea>
+    <textarea id="plan" rows="2" placeholder="Notlar..."></textarea>
 
     <div class="btn-group">
         <button class="btn btn-save" onclick="listeyeEkle()">➕ KAYDET</button>
@@ -213,7 +202,7 @@
         const now = new Date();
         document.getElementById('tarih').value = now.toISOString().split('T')[0];
         document.getElementById('saat').value = now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
-        const stored = localStorage.getItem('ybu_v6_final');
+        const stored = localStorage.getItem('ybu_v7_final');
         if (stored) { hastaListesi = JSON.parse(stored); listeGuncelle(); }
     });
 
@@ -224,23 +213,22 @@
     function listeyeEkle() {
         const v = {
             tarih: getV('tarih'), saat: getV('saat'), yatak: getV('yatakNo'), id: getV('hastaID'),
-            hb: getV('labHb'), wbc: getV('labWbc'), plt: getV('labPlt'), krea: getV('labKrea'), pro: getV('labPro'), alb: getV('labAlb'), digL: getV('labDiger'),
+            hb: getV('labHb'), wbc: getV('labWbc'), plt: getV('labPlt'), krea: getV('labKrea'), pro: getV('labPro'), alb: getV('labAlb'),
             vazo: {
-                nor: { c: getC('check_nor'), d: getV('dose_nor'), u: getV('unit_nor') },
-                dop: { c: getC('check_dop'), d: getV('dose_dop'), u: getV('unit_dop') },
-                dob: { c: getC('check_dob'), d: getV('dose_dob'), u: getV('unit_dob') },
-                adr: { c: getC('check_adr'), d: getV('dose_adr'), u: getV('unit_adr') }
+                nor: { c: getC('check_nor'), d: getV('dose_nor') },
+                dop: { c: getC('check_dop'), d: getV('dose_dop') },
+                dob: { c: getC('check_dob'), d: getV('dose_dob') },
+                adr: { c: getC('check_adr'), d: getV('dose_adr') }
             },
             akc: getR('akc'), sek: getV('sekresyon'), solT: getR('solTuru'), vMod: getR('vMod'),
             bil: getR('bilinc'), gks: getV('gks'), pup: getR('pupil'), pupA: getV('pupilDiger'), sed: getV('sedasyon'),
-            bs: getR('bs'), gai: getR('gaita'), gaiG: getV('gaitaGun'), ekst: getR('ekst'), eksA: getV('ekstAciklama'),
+            bs: getR('bs'), gai: getR('gaita'), gaiG: getV('gaitaGun'), ekst: getR('ekst'),
             renal: getR('renal'), sivi: getV('siviDenge'), kanama: getC('kanama') ? getV('kanamaMiktar') : '',
             bes: getR('bes'), besD: getV('besDoz'), odak: getV('enfOdak'), ab1: getV('ab1'), ab2: getV('ab2'), ab3: getV('ab3'),
             anti: getV('anti'), ulser: getV('ulser'), kons: getV('kons'), plan: getV('plan')
         };
-        if(!v.yatak && !v.id) return alert('Yatak/ID girin');
         hastaListesi.push(v);
-        localStorage.setItem('ybu_v6_final', JSON.stringify(hastaListesi));
+        localStorage.setItem('ybu_v7_final', JSON.stringify(hastaListesi));
         listeGuncelle();
         formuTemizle();
     }
@@ -254,42 +242,34 @@
         });
     }
 
-    function hastaSil(i) { if(confirm('Sil?')) { hastaListesi.splice(i, 1); localStorage.setItem('ybu_v6_final', JSON.stringify(hastaListesi)); listeGuncelle(); } }
+    function hastaSil(i) { if(confirm('Sil?')) { hastaListesi.splice(i, 1); localStorage.setItem('ybu_v7_final', JSON.stringify(hastaListesi)); listeGuncelle(); } }
     function formuTemizle() {
         document.querySelectorAll('input[type=text], input[type=number], textarea').forEach(i => { if(i.id!=='tarih'&&i.id!=='saat') i.value=''; });
         document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(r => r.checked = false);
     }
-    function listeyiTemizle() { if(confirm('Sıfırla?')) { hastaListesi = []; localStorage.removeItem('ybu_v6_final'); listeGuncelle(); } }
+    function listeyiTemizle() { if(confirm('Sıfırla?')) { hastaListesi = []; localStorage.removeItem('ybu_v7_final'); listeGuncelle(); } }
 
     function tumunuWordAktar() {
-        if (hastaListesi.length === 0) return alert('Boş!');
-        let h = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body style='font-family:Arial; font-size:10pt;'>";
-        let c = "<h2>YBÜ VİZİT RAPORU</h2><br>";
-        
+        let h = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body style='font-family:Arial; font-size:10pt;'><h2>YBÜ VİZİT RAPORU</h2><br>";
         hastaListesi.forEach(x => {
-            c += `<p><b>HASTA: ${x.yatak} / ${x.id}</b> - ${x.tarih} ${x.saat}</p>`;
-            
-            // Lab (Birimler ve Çarpanlar)
-            let labStr = "<b>Laboratuvar:</b> ";
+            h += `<p><b>HASTA: ${x.yatak} / ${x.id}</b> - ${x.tarih} ${x.saat}</p>`;
+            let labStr = "";
             if(x.hb) labStr += `Hb: ${x.hb} g/dL, `;
             if(x.wbc) labStr += `WBC: ${parseFloat(x.wbc)*1000} /µL, `;
             if(x.plt) labStr += `PLT: ${parseFloat(x.plt)*1000} /µL, `;
             if(x.alb) labStr += `Albümin: ${x.alb} g/L, `;
             if(x.krea) labStr += `Kreatinin: ${x.krea} mg/dL, `;
             if(x.pro) labStr += `Prokalsitonin: ${x.pro} ng/mL, `;
-            if(x.digL) labStr += `(${x.digL}), `;
-            if(labStr !== "<b>Laboratuvar:</b> ") c += `<p>${labStr.replace(/, $/, "")}</p>`;
+            if(labStr) h += `<p><b>Laboratuvar:</b> ${labStr.replace(/, $/, "")}</p>`;
 
-            // Vazopressör
-            let vazoList = [];
-            if(x.vazo.nor.c) vazoList.push(`Noradrenalin (${x.vazo.nor.d} ${x.vazo.nor.u})`);
-            if(x.vazo.dop.c) vazoList.push(`Dopamin (${x.vazo.dop.d} ${x.vazo.dop.u})`);
-            if(x.vazo.dob.c) vazoList.push(`Dobutamin (${x.vazo.dob.d} ${x.vazo.dob.u})`);
-            if(x.vazo.adr.c) vazoList.push(`Adrenalin (${x.vazo.adr.d} ${x.vazo.adr.u})`);
-            if(vazoList.length) c += `<p><b>Vazopressör Desteği:</b> ${vazoList.join(", ")} infüzyonu alıyor.</p>`;
+            let vList = [];
+            if(x.vazo.nor.c) vList.push(`Noradrenalin (${x.vazo.nor.d} mcg/kg/dk)`);
+            if(x.vazo.dop.c) vList.push(`Dopamin (${x.vazo.dop.d} mg/kg/dk)`);
+            if(x.vazo.dob.c) vList.push(`Dobutamin (${x.vazo.dob.d} mg/kg/dk)`);
+            if(x.vazo.adr.c) vList.push(`Adrenalin (${x.vazo.adr.d} mcg/kg/dk)`);
+            if(vList.length) h += `<p><b>Vazopressör Desteği:</b> ${vList.join(", ")} infüzyonu alıyor.</p>`;
 
-            // Solunum
-            let solStr = "<b>Solunum:</b> ";
+            let solStr = "";
             if(x.akc === "Ral") solStr += "Akciğer seslerinde ralleri var. ";
             else if(x.akc) solStr += `Akciğer sesleri ${x.akc}. `;
             if(x.sek) solStr += `Sekresyon: ${x.sek}. `;
@@ -297,54 +277,40 @@
                 if(x.solT === "IMV") solStr += `IMV desteğinde; Mod: ${x.vMod || "Belirtilmedi"}. `;
                 else solStr += `${x.solT} desteğinde. `;
             }
-            if(solStr !== "<b>Solunum:</b> ") c += `<p>${solStr}</p>`;
+            if(solStr) h += `<p><b>Solunum:</b> ${solStr}</p>`;
 
-            // Nöroloji
-            let noroStr = "<b>Nöroloji:</b> ";
-            if(x.bil) noroStr += `Bilinç ${x.bil}. `;
-            if(x.gks) noroStr += `GKS: ${x.gks}. `;
-            if(x.pup) noroStr += `Pupiller ${x.pup}${x.pupA ? " ("+x.pupA+")" : ""}. `;
-            if(x.sed) noroStr += `${x.sed} infüzyonu altında. `;
-            if(noroStr !== "<b>Nöroloji:</b> ") c += `<p>${noroStr}</p>`;
+            let nStr = "";
+            if(x.bil) nStr += `Bilinç ${x.bil}. `;
+            if(x.gks) nStr += `GKS: ${x.gks}. `;
+            if(x.sed) nStr += `${x.sed} infüzyonu altında. `;
+            if(nStr) h += `<p><b>Nöroloji:</b> ${nStr}</p>`;
 
-            // Muayene
-            let muayStr = "<b>Muayene:</b> ";
-            if(x.bs) muayStr += `Bağırsak sesleri ${x.bs}. `;
-            if(x.gaita) muayStr += `Gaita ${x.gaita}${x.gaiG ? " ("+x.gaiG+". günü)" : ""}. `;
-            if(x.ekst) muayStr += `Ekstremiteler ${x.ekst}${x.eksA ? " ("+x.eksA+")" : ""}. `;
-            if(muayStr !== "<b>Muayene:</b> ") c += `<p>${muayStr}</p>`;
+            let mStr = "";
+            if(x.bs) mStr += `Bağırsak sesleri ${x.bs}. `;
+            if(x.gai) mStr += `Gaita ${x.gai}${x.gaiG ? " ("+x.gaiG+". günü)" : ""}. `;
+            if(mStr) h += `<p><b>Muayene:</b> ${mStr}</p>`;
 
-            // Renal & Beslenme
-            let rbStr = "<b>Renal & Beslenme:</b> ";
-            if(x.renal) rbStr += (x.renal === "Spontan" ? "Spontan idrar çıkışı var. " : `${x.renal} uygulanıyor. `);
-            if(x.sivi) rbStr += `Sıvı dengesi: ${x.sivi}. `;
-            if(x.kanama) rbStr += `Kanama mevcut (${x.kanama} cc). `;
-            if(x.bes) rbStr += `${x.bes} besleniyor${x.besD ? " ("+x.besD+")" : ""}. `;
-            if(rbStr !== "<b>Renal & Beslenme:</b> ") c += `<p>${rbStr}</p>`;
+            let rStr = "";
+            if(x.renal) rStr += (x.renal === "Spontan" ? "Spontan idrar çıkışı var. " : `${x.renal} uygulanıyor. `);
+            if(x.sivi) rStr += `Sıvı dengesi: ${x.sivi}. `;
+            if(x.kanama) rStr += `Kanama mevcut (${x.kanama} cc). `;
+            if(x.bes) rStr += `${x.bes} besleniyor${x.besD ? " ("+x.besD+")" : ""}. `;
+            if(rStr) h += `<p><b>Renal & Beslenme:</b> ${rStr}</p>`;
 
-            // Enfeksiyon
-            let enfStr = "<b>Enfeksiyon:</b> ";
-            if(x.odak) enfStr += `Odak: ${x.odak}. `;
-            let abList = [x.ab1, x.ab2, x.ab3].filter(a => a).join(", ");
-            if(abList) enfStr += `Tedavi: ${abList}. `;
-            else enfStr += "Antibiyoterapi almıyor. ";
-            c += `<p>${enfStr}</p>`;
+            let eStr = "";
+            let ab = [x.ab1, x.ab2, x.ab3].filter(a => a).join(", ");
+            if(x.odak) eStr += `Odak: ${x.odak}. `;
+            eStr += ab ? `Tedavi: ${ab}. ` : "Antibiyoterapi almıyor. ";
+            h += `<p><b>Enfeksiyon:</b> ${eStr}</p>`;
 
-            // Plan
-            let planStr = "<b>Plan:</b> ";
-            if(x.anti) planStr += `Antikoagülasyon: ${x.anti}, `;
-            if(x.ulser) planStr += `Ülser Profilaksisi: ${x.ulser}, `;
-            if(x.kons) planStr += `${x.kons} birimine danışıldı/konsülte edildi. `;
-            if(x.plan) planStr += `Notlar: ${x.plan}. `;
-            if(planStr !== "<b>Plan:</b> ") c += `<p>${planStr.replace(/, $/, "")}</p>`;
-
-            c += "<hr>";
+            let pStr = "";
+            if(x.anti) pStr += `Antikoagülasyon: ${x.anti}, `;
+            if(x.kons) pStr += `${x.kons} birimine danışıldı/konsülte edildi. `;
+            if(x.plan) pStr += `Notlar: ${x.plan}. `;
+            if(pStr) h += `<p><b>Plan:</b> ${pStr.replace(/, $/, "")}</p><hr>`;
         });
-        
-        const blob = new Blob([h + c + "</body></html>"], { type: 'application/msword' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = "YBU_Vizit_Raporu.doc";
-        document.body.appendChild(a); a.click();
+        const blob = new Blob([h + "</body></html>"], { type: 'application/msword' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "YBU_Vizit_Raporu.doc"; a.click();
     }
 </script>
 </body>
