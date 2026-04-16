@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YBÜ İzlem Paneli v14</title>
+    <title>YBÜ İzlem Paneli v15</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
@@ -29,24 +29,24 @@
 </head>
 <body>
 <div class="panel">
-    <h1>🏥 YBÜ İZLEM PANELİ</h1>
+    <h1>🏥 YBÜ İZLEM PANELİ v15</h1>
 
     <div class="row grid-2">
         <input type="date" id="tarih">
         <input type="time" id="saat">
-        <input type="text" id="yatakNo" placeholder="Yatak No">
-        <input type="number" id="hastaID" placeholder="Hasta No (Sayı)">
+        <input type="number" id="yatakNo" placeholder="Yatak No (Sayı)">
+        <input type="text" id="hastaID" placeholder="Hasta ID / İsim">
     </div>
 
     <h3>🧠 NÖROLOJİ</h3>
     <div class="check-group">
-        <label><input type="radio" name="bilinc" value="Açık"> Açık</label>
-        <label><input type="radio" name="bilinc" value="Oryante"> Oryante</label>
-        <label><input type="radio" name="bilinc" value="Koopere"> Koopere</label>
-        <label><input type="radio" name="bilinc" value="Konfüze"> Konfüze</label>
-        <label><input type="radio" name="bilinc" value="Somnolans"> Somnolans</label>
-        <label><input type="radio" name="bilinc" value="Stupor"> Stupor</label>
-        <label><input type="radio" name="bilinc" value="Koma"> Koma</label>
+        <label><input type="checkbox" name="bilinc_combo" value="Açık" class="b-combo"> Açık</label>
+        <label><input type="checkbox" name="bilinc_combo" value="Oryante" class="b-combo"> Oryante</label>
+        <label><input type="checkbox" name="bilinc_combo" value="Koopere" class="b-combo"> Koopere</label>
+        <label><input type="radio" name="bilinc_single" value="Konfüze" class="b-single"> Konf.</label>
+        <label><input type="radio" name="bilinc_single" value="Somnolans" class="b-single"> Somn.</label>
+        <label><input type="radio" name="bilinc_single" value="Stupor" class="b-single"> Stupor</label>
+        <label><input type="radio" name="bilinc_single" value="Koma" class="b-single"> Koma</label>
         <input type="number" id="gks" placeholder="GKS" style="width:50px; margin-left:5px;">
     </div>
     <div class="row" style="margin-top:5px;"><input type="text" id="sedasyonInfo" placeholder="Sedasyon ve Dozu"></div>
@@ -65,7 +65,7 @@
         <input type="number" step="0.1" id="labPlt" placeholder="PLT">
         <input type="number" step="0.01" id="labKrea" placeholder="Krea">
         <input type="number" step="0.01" id="labPro" placeholder="Prokal">
-        <input type="number" step="0.1" id="labAlb" placeholder="Albümin">
+        <input type="number" step="0.1" id="labAlb" placeholder="Alb (g/L)">
     </div>
     <input type="text" id="labDiger" placeholder="Diğer lab (CRP, Laktat vb.)" style="margin-top:5px;">
 
@@ -102,19 +102,21 @@
     <h3>腹 Abdomen & Barsak Sesleri</h3>
     <div class="check-group">
         <label>Barsak:</label>
-        <label><input type="radio" name="bs" value="Normoaktif"> N</label>
-        <label><input type="radio" name="bs" value="Hipoaktif"> H</label>
+        <label><input type="radio" name="bs" value="Normal"> Normal</label>
+        <label><input type="radio" name="bs" value="Hiperaktif"> Hiper.</label>
+        <label><input type="radio" name="bs" value="Hipoaktif"> Hipo.</label>
         <label><input type="radio" name="bs" value="Yok"> Yok</label>
     </div>
     <div class="check-group" style="margin-top:5px;">
         <label>Gaita:</label>
-        <label><input type="radio" name="gaita" value="Normal"> Norm</label>
-        <label><input type="radio" name="gaita" value="Diyare"> Diya</label>
-        <label><input type="radio" name="gaita" value="Melena"> Mel</label>
-        <input type="number" id="gaitaGun" placeholder="G" style="width:40px;">
+        <label><input type="radio" name="gaita" value="Normal"> Normal</label>
+        <label><input type="radio" name="gaita" value="Diyare"> Diyare</label>
+        <label><input type="radio" name="gaita" value="Melena"> Melena</label>
+        <label><input type="radio" name="gaita" value="Yok"> Yok</label>
+        <input type="number" id="gaitaGun" placeholder="Gün" style="width:40px;">
     </div>
 
-    <h3>🦠 Enfeksiyon & Renal & Beslenme</h3>
+    <h3>🦠 Enfeksiyon & Renal</h3>
     <input type="text" id="enfOdak" placeholder="Enfeksiyon Odağı">
     <div class="row grid-2" style="margin-top:5px;">
         <input type="text" id="ab1" placeholder="AB 1"><input type="number" id="ab1G" placeholder="G">
@@ -130,13 +132,17 @@
         <label><input type="radio" name="renal" value="CRRT"> CRRT</label>
     </div>
     <input type="text" id="sivi" placeholder="Aldığı/Çıkardığı" style="margin-top:5px;">
-    <div class="check-group" style="margin-top:5px;">
-        <label>Beslenme:</label>
+
+    <h3>🍎 Beslenme</h3>
+    <div class="check-group">
         <label><input type="radio" name="bes" value="Oral"> Oral</label>
         <label><input type="radio" name="bes" value="Enteral"> Ent</label>
         <label><input type="radio" name="bes" value="TPN"> TPN</label>
         <label><input type="radio" name="bes" value="Aç"> Aç</label>
-        <input type="text" id="besDoz" placeholder="Doz" style="width:70px; margin-left:5px;">
+    </div>
+    <div class="row grid-2" style="margin-top:5px;">
+        <input type="text" id="besUrun" placeholder="Ürün Adı">
+        <div style="display:flex; align-items:center; gap:5px;"><input type="number" id="besHiz" placeholder="Doz"><span>cc/sa</span></div>
     </div>
 
     <h3>📋 Plan</h3>
@@ -157,11 +163,20 @@
 
 <script>
     let hastaListesi = [];
+
+    // Bilinç seçimi mantığı
+    document.querySelectorAll('.b-combo').forEach(el => el.addEventListener('change', function() {
+        if(this.checked) document.querySelectorAll('.b-single').forEach(s => s.checked = false);
+    }));
+    document.querySelectorAll('.b-single').forEach(el => el.addEventListener('change', function() {
+        if(this.checked) document.querySelectorAll('.b-combo').forEach(c => c.checked = false);
+    }));
+
     window.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         document.getElementById('tarih').value = now.toISOString().split('T')[0];
         document.getElementById('saat').value = now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
-        const stored = localStorage.getItem('ybu_v14');
+        const stored = localStorage.getItem('ybu_v15');
         if (stored) { hastaListesi = JSON.parse(stored); listeGuncelle(); }
     });
 
@@ -174,6 +189,9 @@
     function getC(name) { return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(e => e.value); }
 
     function kaydet() {
+        let bilincler = getC('bilinc_combo');
+        if(bilincler.length === 0) bilincler = [getR('bilinc_single')];
+        
         let v = {
             tarih: getV('tarih'), saat: getV('saat'), yatak: getV('yatakNo'), id: getV('hastaID'),
             hb: getV('labHb'), wbc: getV('labWbc'), plt: getV('labPlt'), krea: getV('labKrea'), pro: getV('labPro'), alb: getV('labAlb'), digL: getV('labDiger'),
@@ -184,19 +202,19 @@
                 adr: { c: document.getElementById('c_adr').checked, d: getV('d_adr') }
             },
             akc: getC('akc'), sek: getV('sekresyon'), solT: getR('solTuru'), vMod: getR('vMod'),
-            bil: getR('bilinc'), gks: getV('gks'), pupil: getR('pupil'), sed: getV('sedasyonInfo'),
-            bs: getR('bs'), gai: getR('gaita'), gaiG: getV('gaitaGun'),
+            bil: bilincler.filter(b => b), gks: getV('gks'), pupil: getR('pupil'), sed: getV('sedasyonInfo'),
+            bs: getR('bs'), gaita: getR('gaita'), gaiG: getV('gaitaGun'),
             enf: getV('enfOdak'), 
             ilaçlar: [
                 {n: getV('ab1'), g: getV('ab1G')}, {n: getV('ab2'), g: getV('ab2G')}, {n: getV('ab3'), g: getV('ab3G')},
                 {n: getV('afung'), g: getV('afungG')}, {n: getV('avir'), g: getV('avirG')}
             ],
-            renal: getR('renal'), sivi: getV('sivi'), bes: getR('bes'), besD: getV('besDoz'),
+            renal: getR('renal'), sivi: getV('sivi'), 
+            bes: getR('bes'), besU: getV('besUrun'), besH: getV('besHiz'),
             anti: getV('anti'), kons: getV('kons'), plan: getV('plan')
         };
-        if(!v.yatak && !v.id) return alert('Veri girin!');
         hastaListesi.push(v);
-        localStorage.setItem('ybu_v14', JSON.stringify(hastaListesi));
+        localStorage.setItem('ybu_v15', JSON.stringify(hastaListesi));
         listeGuncelle();
         formuTemizle();
     }
@@ -204,14 +222,14 @@
     function listeGuncelle() {
         let l = document.getElementById('liste'); l.innerHTML = '';
         hastaListesi.forEach((h, i) => {
-            l.innerHTML += `<div style="padding:5px; border-bottom:1px solid #ddd;">${h.yatak} - ${h.id} <button onclick="sil(${i})" style="color:red; float:right; border:none; background:none;">X</button></div>`;
+            l.innerHTML += `<div style="padding:5px; border-bottom:1px solid #ddd;">Yatak ${h.yatak} - ${h.id} <button onclick="sil(${i})" style="color:red; float:right; border:none; background:none;">X</button></div>`;
         });
     }
 
     function wordAktar() {
         let doc = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body>";
         hastaListesi.forEach(x => {
-            doc += `<h3>Hasta: ${x.yatak} / ${x.id} - ${x.tarih} ${x.saat}</h3>`;
+            doc += `<h3>Hasta: Yatak ${x.yatak} / ${x.id} - ${x.tarih} ${x.saat}</h3>`;
             if(x.hb) doc += `<p><b>Laboratuvar:</b> Hb: ${x.hb} g/dL, WBC: ${x.wbc*1000} /µL, PLT: ${x.plt*1000} /µL, Kreatinin: ${x.krea} mg/dL, Prokalsitonin: ${x.pro} ng/mL, Albümin: ${x.alb} g/L. ${x.digL}</p>`;
             
             let vStr = [];
@@ -225,14 +243,15 @@
             let solEki = x.solT === 'Spontan' ? 'solunumda' : 'desteğinde';
             doc += `<p><b>Solunum:</b> ${akcSes}. ${x.sek ? 'Sekresyon: '+x.sek : ''}. ${x.solT || ''} ${solEki}. ${x.vMod ? 'Mod: '+x.vMod : ''}</p>`;
 
-            doc += `<p><b>Nöroloji:</b> Bilinç ${x.bil || ''}. ${x.gks ? 'GKS: '+x.gks : ''}. Pupiller ${x.pup || ''}. ${x.sed ? x.sed + ' infüzyonu altında.' : ''}</p>`;
-            doc += `<p><b>Muayene:</b> Barsak sesleri ${x.bs === 'Normoaktif' ? 'normoaktiftir' : x.bs || ''}. Gaita ${x.gai || ''} ${x.gaiG ? '('+x.gaiG+'. günü)' : ''}.</p>`;
+            let bilincler = x.bil.join(', ');
+            doc += `<p><b>Nöroloji:</b> Bilinç ${bilincler}. ${x.gks ? 'GKS: '+x.gks : ''}. ${x.pup ? 'Pupiller ' + x.pup + '.' : ''} ${x.sed ? x.sed + ' infüzyonu altında.' : ''}</p>`;
+            doc += `<p><b>Muayene:</b> Barsak sesleri ${x.bs === 'Normal' ? 'normaldir' : x.bs}. Gaita ${x.gai || ''} ${x.gaiG ? '('+x.gaiG+'. günü)' : ''}.</p>`;
             
             let renalStr = x.renal === 'Spontan' ? 'Spontan idrar çıkışı var.' : (x.renal ? `Hasta ${x.renal}'ye girdi.` : '');
-            doc += `<p><b>Renal & Beslenme:</b> ${renalStr} Sıvı Dengesi: ${x.sivi || ''}. ${x.bes || ''} besleniyor ${x.besD ? '('+x.besD+')' : ''}.</p>`;
+            doc += `<p><b>Renal & Beslenme:</b> ${renalStr} Sıvı Dengesi: ${x.sivi || ''}. ${x.bes ? x.bes + ' besleniyor.' : ''} ${x.besU ? x.besU + ' ürünü ' + x.besH + ' cc/saat hızında.' : ''}</p>`;
 
             let ilaçar = x.ilaçlar.filter(i => i.n).map(i => `${i.n} (${i.g}. gün)`).join(', ');
-            doc += `<p><b>Enfeksiyon:</b> Odak: ${x.enf || ''}. ${ilaçar ? 'Tedavi: ' + ilaçar + ' aldı.' : 'Antibiyoterapi almıyor.'}</p>`;
+            if(x.enf || ilaçar) doc += `<p><b>Enfeksiyon:</b> ${x.enf ? 'Odak: '+x.enf+'.' : ''} ${ilaçar ? 'Tedavi: ' + ilaçar + ' aldı.' : 'Antibiyoterapi almıyor.'}</p>`;
             
             let planStr = "";
             if(x.anti) planStr += `${x.anti} aldı. `;
@@ -242,10 +261,10 @@
             doc += `<p><b>Hastanın bakımları yapılmıştır.</b></p><hr>`;
         });
         let blob = new Blob([doc + "</body></html>"], {type:'application/msword'});
-        let link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "vizit_v14.doc"; link.click();
+        let link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "vizit_v15.doc"; link.click();
     }
-    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v14', JSON.stringify(hastaListesi)); listeGuncelle(); }
-    function listeSil() { if(confirm('Sil?')) { hastaListesi = []; localStorage.removeItem('ybu_v14'); listeGuncelle(); } }
+    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v15', JSON.stringify(hastaListesi)); listeGuncelle(); }
+    function listeSil() { if(confirm('Sil?')) { hastaListesi = []; localStorage.removeItem('ybu_v15'); listeGuncelle(); } }
     function formuTemizle() { document.querySelectorAll('input[type=text], input[type=number], textarea').forEach(i => i.value=''); document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(r => r.checked = false); }
 </script>
 </body>
