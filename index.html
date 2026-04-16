@@ -3,34 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YBÜ İzlem Paneli v8</title>
+    <title>YBÜ İzlem Paneli v9</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
-        body { margin: 0; padding: 8px; background: #f0f4f8; font-size: 13px; color: #333; }
-        .panel { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 1050px; margin: auto; }
-        h1 { font-size: 1.4rem; text-align: center; margin: 0 0 12px; color: #1e466e; border-bottom: 2px solid #eee; padding-bottom: 5px; }
-        h3 { font-size: 0.9rem; margin: 12px 0 6px; padding: 4px 10px; background: #e9ecef; border-radius: 4px; font-weight: 600; color: #495057; }
-        .row { display: grid; gap: 8px; margin-bottom: 8px; align-items: center; }
-        .grid-header { grid-template-columns: 1fr 1fr 1fr 2fr; }
+        body { margin: 0; padding: 5px; background: #f0f4f8; font-size: 13px; color: #333; }
+        .panel { background: white; border-radius: 10px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 1050px; margin: auto; }
+        h1 { font-size: 1.3rem; text-align: center; margin: 0 0 10px; color: #1e466e; border-bottom: 2px solid #eee; padding-bottom: 3px; }
+        h3 { font-size: 0.85rem; margin: 8px 0 4px; padding: 3px 10px; background: #e9ecef; border-radius: 4px; font-weight: 600; color: #495057; text-transform: uppercase; }
+        
+        .row { display: grid; gap: 8px; margin-bottom: 6px; align-items: center; }
+        .grid-header { grid-template-columns: 1fr 1fr 1fr 2.5fr; }
         .grid-lab { grid-template-columns: repeat(6, 1fr); }
-        .grid-vazo { grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
-        .radio-group { display: flex; flex-wrap: wrap; gap: 8px; background: #f8f9fa; padding: 6px 10px; border-radius: 5px; border: 1px solid #dee2e6; }
-        .radio-group label { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; font-weight: 500; font-size: 12px; }
-        input[type="radio"], input[type="checkbox"] { width: 18px; height: 18px; margin: 0; }
-        .vazo-item { display: flex; flex-direction: column; gap: 2px; background: #fff; border: 1px solid #eee; padding: 6px; border-radius: 5px; align-items: center; }
-        .vazo-item input[type="number"] { width: 60px; padding: 4px; text-align: center; }
-        .vazo-item span { font-size: 9px; color: #666; font-weight: bold; }
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .btn { padding: 12px; border: none; border-radius: 25px; color: white; font-weight: bold; cursor: pointer; font-size: 15px; }
+        .grid-vazo-flat { display: flex; flex-wrap: nowrap; gap: 10px; background: #f8f9fa; padding: 6px; border-radius: 6px; border: 1px solid #dee2e6; overflow-x: auto; }
+
+        input, select, textarea { width: 100%; padding: 7px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+        
+        .radio-group { display: flex; flex-wrap: wrap; gap: 6px; background: #f8f9fa; padding: 5px 10px; border-radius: 5px; border: 1px solid #dee2e6; }
+        .radio-group label { display: inline-flex; align-items: center; gap: 3px; cursor: pointer; font-weight: 500; font-size: 12px; }
+        input[type="radio"], input[type="checkbox"] { width: 16px; height: 16px; margin: 0; }
+
+        /* Vazopressör Yatay Düzen */
+        .vazo-unit { display: flex; align-items: center; gap: 4px; white-space: nowrap; font-size: 11px; font-weight: bold; border-right: 1px solid #ddd; padding-right: 8px; }
+        .vazo-unit:last-child { border-right: none; }
+        .vazo-unit input[type="number"] { width: 55px; padding: 3px; font-size: 12px; }
+
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+        .btn { padding: 10px; border: none; border-radius: 20px; color: white; font-weight: bold; cursor: pointer; font-size: 14px; }
         .btn-save { background: #28a745; }
         .btn-clear { background: #6c757d; }
         .btn-word { background: #0d6efd; }
         .btn-delete { background: #dc3545; }
-        .list-area { margin-top: 15px; border-top: 2px solid #eee; }
-        table { width: 100%; border-collapse: collapse; }
-        td { padding: 8px; border-bottom: 1px solid #eee; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        td { padding: 6px; border-bottom: 1px solid #eee; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -50,38 +56,38 @@
         <input type="number" step="0.1" id="labHb" placeholder="Hb">
         <input type="number" step="0.1" id="labWbc" placeholder="WBC">
         <input type="number" step="0.1" id="labPlt" placeholder="PLT">
-        <input type="number" step="0.01" id="labKrea" placeholder="Kreatinin">
-        <input type="number" step="0.01" id="labPro" placeholder="Prokalsitonin">
+        <input type="number" step="0.01" id="labKrea" placeholder="Krea">
+        <input type="number" step="0.01" id="labPro" placeholder="Prok">
         <input type="number" step="0.1" id="labAlb" placeholder="Albümin">
     </div>
     <div class="row"><input type="text" id="labDiger" placeholder="Diğer lab (CRP, Laktat vb.)"></div>
 
     <h3>💉 Vazopressör Desteği</h3>
-    <div class="row grid-vazo">
-        <div class="vazo-item">
+    <div class="grid-vazo-flat">
+        <div class="vazo-unit">
             <label><input type="checkbox" id="check_nor"> Norad.</label>
             <input type="number" step="0.01" id="dose_nor" placeholder="Doz">
-            <span>mcg/kg/dk</span>
+            <span>mcg</span>
         </div>
-        <div class="vazo-item">
+        <div class="vazo-unit">
             <label><input type="checkbox" id="check_dop"> Dopamin</label>
             <input type="number" step="0.1" id="dose_dop" placeholder="Doz">
-            <span>mg/kg/dk</span>
+            <span>mg</span>
         </div>
-        <div class="vazo-item">
-            <label><input type="checkbox" id="check_dob"> Dobutam.</label>
+        <div class="vazo-unit">
+            <label><input type="checkbox" id="check_dob"> Dobut.</label>
             <input type="number" step="0.1" id="dose_dob" placeholder="Doz">
-            <span>mg/kg/dk</span>
+            <span>mg</span>
         </div>
-        <div class="vazo-item">
+        <div class="vazo-unit">
             <label><input type="checkbox" id="check_adr"> Adrenal.</label>
             <input type="number" step="0.01" id="dose_adr" placeholder="Doz">
-            <span>mcg/kg/dk</span>
+            <span>mcg</span>
         </div>
     </div>
 
     <h3>🫁 Solunum Sistemi</h3>
-    <div class="row" style="grid-template-columns: 2.5fr 1.5fr;">
+    <div class="row" style="grid-template-columns: 2.2fr 1.8fr;">
         <div class="radio-group">
             <label><input type="radio" name="akc" value="Doğal"> Doğal</label>
             <label><input type="radio" name="akc" value="Ral"> Ral</label>
@@ -99,8 +105,8 @@
             <label><input type="radio" name="solTuru" value="NIMV"> NIMV</label>
             <label><input type="radio" name="solTuru" value="IMV"> IMV</label>
         </div>
-        <div class="radio-group" style="background: #fff4e5;">
-            <label><input type="radio" name="vMod" value="AC/PRVC"> AC/PRVC</label>
+        <div class="radio-group" style="background: #fff4e5; padding: 2px 5px;">
+            <label><input type="radio" name="vMod" value="AC/PRVC"> PRVC</label>
             <label><input type="radio" name="vMod" value="CPAP"> CPAP</label>
             <label><input type="radio" name="vMod" value="PSV"> PSV</label>
             <label><input type="radio" name="vMod" value="SPS"> SPS</label>
@@ -108,17 +114,17 @@
     </div>
 
     <h3>🧠 Nöroloji & Sedasyon</h3>
-    <div class="row" style="grid-template-columns: 1.5fr 1fr;">
+    <div class="row" style="grid-template-columns: 1.4fr 0.6fr 2fr;">
         <div class="radio-group">
             <label><input type="radio" name="bilinc" value="Açık"> Açık</label>
             <label><input type="radio" name="bilinc" value="Konfüze"> Konf</label>
             <label><input type="radio" name="bilinc" value="Somnolans"> Somno</label>
             <label><input type="radio" name="bilinc" value="Stupor"> Stupor</label>
-            <input type="number" id="gks" placeholder="GKS" style="width: 60px; margin-left: 5px;">
         </div>
+        <input type="number" id="gks" placeholder="GKS">
         <input type="text" id="sedasyon" placeholder="Sedasyon detayı">
     </div>
-    <div class="row" style="grid-template-columns: 2fr 1fr;">
+    <div class="row" style="grid-template-columns: 1.5fr 1fr;">
         <div class="radio-group">
             <label>Pupiller:</label>
             <label><input type="radio" name="pupil" value="İzokorik"> İzo</label>
@@ -143,7 +149,7 @@
             <label><input type="radio" name="gaita" value="Diyare"> Diya</label>
             <label><input type="radio" name="gaita" value="Melena"> Mel</label>
             <label><input type="radio" name="gaita" value="Yok"> Yok</label>
-            <input type="number" id="gaitaGun" placeholder="G" style="width:40px;">
+            <input type="number" id="gaitaGun" placeholder="G" style="width:35px;">
         </div>
         <div class="radio-group">
             <label>Ekst:</label>
@@ -164,11 +170,11 @@
     <div class="row" style="grid-template-columns: 1.2fr 1.5fr 1.3fr;">
         <div class="radio-group"><label><input type="radio" name="renal" value="Spontan"> Spon</label><label><input type="radio" name="renal" value="HD"> HD</label><label><input type="radio" name="renal" value="CRRT"> CRRT</label></div>
         <input type="text" id="siviDenge" placeholder="Sıvı (Aldığı/Çıkardığı)">
-        <div class="radio-group"><label><input type="checkbox" id="kanama"> Kanama</label><input type="text" id="kanamaMiktar" placeholder="cc" style="width:50px;"></div>
+        <div class="radio-group"><label><input type="checkbox" id="kanama"> Kanama</label><input type="text" id="kanamaMiktar" placeholder="cc" style="width:45px;"></div>
     </div>
     <div class="row" style="grid-template-columns: 1.5fr 1fr;">
         <div class="radio-group">
-            <label>Beslenme:</label>
+            <label>Bes:</label>
             <label><input type="radio" name="bes" value="Oral"> Oral</label>
             <label><input type="radio" name="bes" value="Enteral"> Ent</label>
             <label><input type="radio" name="bes" value="TPN"> TPN</label>
@@ -183,7 +189,7 @@
         <input type="text" id="ulser" placeholder="Ülser Prof.">
         <input type="text" id="kons" placeholder="Konsültasyonlar">
     </div>
-    <textarea id="plan" rows="2" placeholder="Notlar..."></textarea>
+    <textarea id="plan" rows="1" placeholder="Notlar..."></textarea>
 
     <div class="btn-group">
         <button class="btn btn-save" onclick="listeyeEkle()">➕ KAYDET</button>
@@ -204,7 +210,7 @@
         const now = new Date();
         document.getElementById('tarih').value = now.toISOString().split('T')[0];
         document.getElementById('saat').value = now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
-        const stored = localStorage.getItem('ybu_v8_final');
+        const stored = localStorage.getItem('ybu_v9_final');
         if (stored) { hastaListesi = JSON.parse(stored); listeGuncelle(); }
     });
 
@@ -217,10 +223,10 @@
             tarih: getV('tarih'), saat: getV('saat'), yatak: getV('yatakNo'), id: getV('hastaID'),
             hb: getV('labHb'), wbc: getV('labWbc'), plt: getV('labPlt'), krea: getV('labKrea'), pro: getV('labPro'), alb: getV('labAlb'), digL: getV('labDiger'),
             vazo: {
-                nor: { c: getC('check_nor'), d: getV('dose_nor') },
-                dop: { c: getC('check_dop'), d: getV('dose_dop') },
-                dob: { c: getC('check_dob'), d: getV('dose_dob') },
-                adr: { c: getC('check_adr'), d: getV('dose_adr') }
+                nor: { c: getC('check_nor'), d: getV('dose_nor'), u: 'mcg/kg/dk' },
+                dop: { c: getC('check_dop'), d: getV('dose_dop'), u: 'mg/kg/dk' },
+                dob: { c: getC('check_dob'), d: getV('dose_dob'), u: 'mg/kg/dk' },
+                adr: { c: getC('check_adr'), d: getV('dose_adr'), u: 'mcg/kg/dk' }
             },
             akc: getR('akc'), sek: getV('sekresyon'), solT: getR('solTuru'), vMod: getR('vMod'),
             bil: getR('bilinc'), gks: getV('gks'), pup: getR('pupil'), pupA: getV('pupilDiger'), sed: getV('sedasyon'),
@@ -230,7 +236,7 @@
             anti: getV('anti'), ulser: getV('ulser'), kons: getV('kons'), plan: getV('plan')
         };
         hastaListesi.push(v);
-        localStorage.setItem('ybu_v8_final', JSON.stringify(hastaListesi));
+        localStorage.setItem('ybu_v9_final', JSON.stringify(hastaListesi));
         listeGuncelle();
         formuTemizle();
     }
@@ -244,12 +250,12 @@
         });
     }
 
-    function hastaSil(i) { if(confirm('Sil?')) { hastaListesi.splice(i, 1); localStorage.setItem('ybu_v8_final', JSON.stringify(hastaListesi)); listeGuncelle(); } }
+    function hastaSil(i) { if(confirm('Sil?')) { hastaListesi.splice(i, 1); localStorage.setItem('ybu_v9_final', JSON.stringify(hastaListesi)); listeGuncelle(); } }
     function formuTemizle() {
         document.querySelectorAll('input[type=text], input[type=number], textarea').forEach(i => { if(i.id!=='tarih'&&i.id!=='saat') i.value=''; });
         document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(r => r.checked = false);
     }
-    function listeyiTemizle() { if(confirm('Sıfırla?')) { hastaListesi = []; localStorage.removeItem('ybu_v8_final'); listeGuncelle(); } }
+    function listeyiTemizle() { if(confirm('Sıfırla?')) { hastaListesi = []; localStorage.removeItem('ybu_v9_final'); listeGuncelle(); } }
 
     function tumunuWordAktar() {
         let h = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body style='font-family:Arial; font-size:10pt;'><h2>YBÜ VİZİT RAPORU</h2><br>";
