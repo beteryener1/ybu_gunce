@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YBÜ İzlem Paneli v16</title>
+    <title>YBÜ İzlem Paneli v17</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
@@ -25,11 +25,12 @@
         .hidden { display: none; }
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
         .btn { padding: 12px; border: none; border-radius: 20px; color: white; font-weight: bold; font-size: 14px; cursor: pointer; }
+        .edit-btn { color: #0d6efd; margin-right: 15px; font-weight: bold; cursor: pointer; border:none; background:none; }
     </style>
 </head>
 <body>
 <div class="panel">
-    <h1>🏥 YBÜ İZLEM PANELİ v16</h1>
+    <h1>🏥 YBÜ İZLEM PANELİ v17</h1>
 
     <div class="row grid-2">
         <input type="date" id="tarih">
@@ -176,7 +177,7 @@
         const now = new Date();
         document.getElementById('tarih').value = now.toISOString().split('T')[0];
         document.getElementById('saat').value = now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
-        const stored = localStorage.getItem('ybu_v16');
+        const stored = localStorage.getItem('ybu_v17');
         if (stored) { hastaListesi = JSON.parse(stored); listeGuncelle(); }
     });
 
@@ -185,8 +186,11 @@
     });
 
     function getV(id) { return document.getElementById(id).value.trim(); }
+    function setV(id, val) { document.getElementById(id).value = val || ''; }
     function getR(name) { let el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : ''; }
+    function setR(name, val) { let el = document.querySelector(`input[name="${name}"][value="${val}"]`); if(el) el.checked = true; }
     function getC(name) { return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(e => e.value); }
+    function setC(name, vals) { if(!vals) return; document.querySelectorAll(`input[name="${name}"]`).forEach(el => { if(vals.includes(el.value)) el.checked = true; }); }
 
     function kaydet() {
         let bilincler = getC('bilinc_combo');
@@ -214,7 +218,7 @@
             anti: getV('anti'), kons: getV('kons'), plan: getV('plan')
         };
         hastaListesi.push(v);
-        localStorage.setItem('ybu_v16', JSON.stringify(hastaListesi));
+        localStorage.setItem('ybu_v17', JSON.stringify(hastaListesi));
         listeGuncelle();
         formuTemizle();
     }
@@ -222,8 +226,50 @@
     function listeGuncelle() {
         let l = document.getElementById('liste'); l.innerHTML = '';
         hastaListesi.forEach((h, i) => {
-            l.innerHTML += `<div style="padding:5px; border-bottom:1px solid #ddd;">Yatak ${h.yatak} - ${h.id} <button onclick="sil(${i})" style="color:red; float:right; border:none; background:none;">X</button></div>`;
+            l.innerHTML += `<div style="padding:8px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center;">
+                <span>Yatak ${h.yatak} - ${h.id}</span>
+                <div>
+                    <button class="edit-btn" onclick="duzenle(${i})">✎ DÜZELT</button>
+                    <button onclick="sil(${i})" style="color:red; border:none; background:none; font-weight:bold;">X</button>
+                </div>
+            </div>`;
         });
+    }
+
+    function duzenle(i) {
+        let h = hastaListesi[i];
+        formuTemizle();
+        setV('tarih', h.tarih); setV('saat', h.saat); setV('yatakNo', h.yatak); setV('hastaID', h.id);
+        setV('labHb', h.hb); setV('labWbc', h.wbc); setV('labPlt', h.plt); setV('labKrea', h.krea); setV('labPro', h.pro); setV('labAlb', h.alb); setV('labDiger', h.digL);
+        
+        document.getElementById('c_nor').checked = h.vazo.nor.c; setV('d_nor', h.vazo.nor.d);
+        document.getElementById('c_dop').checked = h.vazo.dop.c; setV('d_dop', h.vazo.dop.d);
+        document.getElementById('c_dob').checked = h.vazo.dob.c; setV('d_dob', h.vazo.dob.d);
+        document.getElementById('c_adr').checked = h.vazo.adr.c; setV('d_adr', h.vazo.adr.d);
+
+        setC('akc', h.akc); setV('sekresyon', h.sek); setR('solTuru', h.solT); setR('vMod', h.vMod);
+        if(h.solT === 'IMV') document.getElementById('imvModBox').classList.remove('hidden');
+
+        // Bilinç combo/single ayrımı
+        if(h.bil.some(b => ["Açık", "Oryante", "Koopere"].includes(b))) setC('bilinc_combo', h.bil);
+        else setR('bilinc_single', h.bil[0]);
+
+        setV('gks', h.gks); setR('pupil', h.pupil); setV('sedasyonInfo', h.sed);
+        setR('bs', h.bs); setR('gaita', h.gaita); setV('gaitaGun', h.gaiG);
+        setV('enfOdak', h.enf);
+        
+        setV('ab1', h.ilaçlar[0].n); setV('ab1G', h.ilaçlar[0].g);
+        setV('ab2', h.ilaçlar[1].n); setV('ab2G', h.ilaçlar[1].g);
+        setV('ab3', h.ilaçlar[2].n); setV('ab3G', h.ilaçlar[2].g);
+        setV('afung', h.ilaçlar[3].n); setV('afungG', h.ilaçlar[3].g);
+        setV('avir', h.ilaçlar[4].n); setV('avirG', h.ilaçlar[4].g);
+
+        setR('renal', h.renal); setV('sivi', h.sivi); setR('bes', h.bes); setV('besUrun', h.besU); setV('besHiz', h.besH);
+        setV('anti', h.anti); setV('kons', h.kons); setV('plan', h.plan);
+
+        // Düzenlenen öğeyi listeden sil (Kaydet deyince sona eklenecek)
+        sil(i);
+        window.scrollTo(0,0);
     }
 
     function wordAktar() {
@@ -270,11 +316,15 @@
             doc += `<p><b>Hastanın bakımları yapılmıştır.</b></p><hr>`;
         });
         let blob = new Blob([doc + "</body></html>"], {type:'application/msword'});
-        let link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "vizit_v16_final.doc"; link.click();
+        let link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "vizit_v17.doc"; link.click();
     }
-    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v16', JSON.stringify(hastaListesi)); listeGuncelle(); }
-    function listeSil() { if(confirm('Sil?')) { hastaListesi = []; localStorage.removeItem('ybu_v16'); listeGuncelle(); } }
-    function formuTemizle() { document.querySelectorAll('input[type=text], input[type=number], textarea').forEach(i => i.value=''); document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(r => r.checked = false); }
+    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v17', JSON.stringify(hastaListesi)); listeGuncelle(); }
+    function listeSil() { if(confirm('Sil?')) { hastaListesi = []; localStorage.removeItem('ybu_v17'); listeGuncelle(); } }
+    function formuTemizle() { 
+        document.querySelectorAll('input[type=text], input[type=number], textarea').forEach(i => i.value=''); 
+        document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(r => r.checked = false);
+        document.getElementById('imvModBox').classList.add('hidden');
+    }
 </script>
 </body>
 </html>
