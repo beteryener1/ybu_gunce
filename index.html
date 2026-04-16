@@ -29,7 +29,7 @@
         input, select, textarea { width: 100%; padding: 12px 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; background: white; }
         .radio-group { display: flex; flex-wrap: wrap; gap: 10px 15px; background: #f1f5f9; padding: 10px; border-radius: 8px; }
         .radio-group label { display: inline-flex; align-items: center; gap: 5px; font-weight: normal; }
-        input[type="radio"] { width: 20px; height: 20px; accent-color: #0d6efd; }
+        input[type="radio"] { width: 22px; height: 22px; accent-color: #0d6efd; }
         .btn { background: #0d6efd; color: white; border: none; padding: 14px 20px; font-size: 1.1rem; font-weight: bold; border-radius: 40px; cursor: pointer; width: 100%; margin-top: 15px; }
         .btn-success { background: #198754; }
         .btn-warning { background: #fd7e14; }
@@ -37,7 +37,7 @@
         .hidden { display: none; }
         .flex-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
         .kons-grid, .antibiyotik-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 20px; }
         th, td { padding: 8px; border-bottom: 1px solid #ddd; text-align: left; }
         @media (min-width: 768px) { .grid-4 { grid-template-columns: repeat(4, 1fr); } .grid-5, .kons-grid, .antibiyotik-grid { grid-template-columns: repeat(5, 1fr); } }
     </style>
@@ -171,7 +171,7 @@
                 <label><input type="radio" name="gaita" value="Melena"> Melena</label>
                 <label><input type="radio" name="gaita" value="Yok" id="gaitaYok"> Yok</label>
             </div>
-            <div id="gaitaGunDiv"><label>Gün:</label><input type="text" id="gaitaGun" style="width:70px;" placeholder="Girilirse çıktıya eklenir"></div>
+            <div id="gaitaGunDiv"><label>Gün:</label><input type="text" id="gaitaGun" style="width:70px;" placeholder="No"></div>
         </div>
     </div>
 
@@ -185,9 +185,9 @@
     <h3>7. ENFEKSİYON</h3>
     <div class="input-group"><label>Odak</label><input type="text" id="enfeksiyonOdagi"></div>
     <div class="antibiyotik-grid">
-        <div class="input-group"><label>Antibiyotik 1</label><input type="text" id="ab1"></div>
-        <div class="input-group"><label>Antibiyotik 2</label><input type="text" id="ab2"></div>
-        <div class="input-group"><label>Antibiyotik 3</label><input type="text" id="ab3"></div>
+        <div class="input-group"><label>AB 1</label><input type="text" id="ab1"></div>
+        <div class="input-group"><label>AB 2</label><input type="text" id="ab2"></div>
+        <div class="input-group"><label>AB 3</label><input type="text" id="ab3"></div>
         <div class="input-group"><label>Antifungal</label><input type="text" id="antifungal"></div>
         <div class="input-group"><label>Antiviral</label><input type="text" id="antiviral"></div>
     </div>
@@ -223,9 +223,9 @@
     </div>
     <div class="input-group"><label>Plan</label><textarea id="plan" rows="2"></textarea></div>
 
-    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 25px;">
-        <button class="btn btn-success" onclick="listeyeEkle()" style="flex:2;">➕ LİSTEYE EKLE</button>
-        <button class="btn btn-warning" onclick="formuTemizle()" style="flex:1;">🔄 TEMİZLE</button>
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-top: 25px;">
+        <button class="btn btn-success" onclick="listeyeEkle()">➕ LİSTEYE EKLE</button>
+        <button class="btn btn-warning" onclick="formuTemizle()">🔄 TEMİZLE</button>
     </div>
     
     <div style="margin-top: 30px;">
@@ -249,13 +249,14 @@
         const now = new Date();
         document.getElementById('tarih').value = now.toISOString().split('T')[0];
         document.getElementById('saat').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-        const stored = localStorage.getItem('ybu_data_v3');
+        const stored = localStorage.getItem('ybu_data_v_final');
         if (stored) {
             hastaListesi = JSON.parse(stored);
             listeGuncelle();
         }
     });
 
+    // Dinamik alanlar
     document.querySelectorAll('input[name="solunumTuru"]').forEach(r => r.addEventListener('change', function() {
         document.getElementById('imvModDiv').classList.toggle('hidden', this.value !== 'IMV');
     }));
@@ -297,8 +298,9 @@
         };
 
         if (!veri.yatakNo && !veri.hastaID) return alert('Yatak No veya Hasta ID girin');
+        
         hastaListesi.push(veri);
-        localStorage.setItem('ybu_data_v3', JSON.stringify(hastaListesi));
+        localStorage.setItem('ybu_data_v_final', JSON.stringify(hastaListesi));
         listeGuncelle();
         formuTemizle();
     }
@@ -308,105 +310,95 @@
         tbody.innerHTML = '';
         hastaListesi.forEach((h, i) => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${h.yatakNo}</td><td>${h.hastaID}</td><td>${h.bilinc}</td><td><button onclick="hastaSil(${i})" style="color:red; background:none; border:none;">❌</button></td>`;
+            tr.innerHTML = `<td>${h.yatakNo}</td><td>${h.hastaID}</td><td>${h.bilinc}</td><td><button onclick="hastaSil(${i})" style="color:red; background:none; border:none; font-size:1.2rem;">❌</button></td>`;
             tbody.appendChild(tr);
         });
         document.getElementById('hastaSayisi').innerText = hastaListesi.length;
     }
 
     function hastaSil(i) {
-        hastaListesi.splice(i, 1);
-        localStorage.setItem('ybu_data_v3', JSON.stringify(hastaListesi));
-        listeGuncelle();
+        if(confirm('Kayıt silinsin mi?')) {
+            hastaListesi.splice(i, 1);
+            localStorage.setItem('ybu_data_v_final', JSON.stringify(hastaListesi));
+            listeGuncelle();
+        }
     }
 
     function formuTemizle() {
-        const yatak = document.getElementById('yatakNo').value;
-        document.querySelectorAll('input[type=text], textarea').forEach(i => i.value = '');
+        document.querySelectorAll('input[type=text], input[type=date], input[type=time], textarea').forEach(i => {
+            if(i.id !== 'tarih' && i.id !== 'saat') i.value = '';
+        });
         document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
-        document.getElementById('yatakNo').value = yatak;
         document.getElementById('bilanco').value = '';
     }
 
     function listeyiTemizle() {
         if(confirm('Tüm liste silinsin mi?')) {
-            hastaListesi = []; localStorage.removeItem('ybu_data_v3'); listeGuncelle();
+            hastaListesi = [];
+            localStorage.removeItem('ybu_data_v_final');
+            listeGuncelle();
         }
     }
 
     function tumunuWordAktar() {
-    if (hastaListesi.length === 0) return alert('Liste boş!');
-    
-    // Word dosyasının iPad tarafından tanınması için HTML başlıkları ekliyoruz
-    let header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
-            "xmlns:w='urn:schemas-microsoft-com:office:word' "+
-            "xmlns='http://www.w3.org/TR/REC-html40'>"+
-            "<head><meta charset='utf-8'></head><body>";
-    let footer = "</body></html>";
-    
-    let docContent = "<h2>YBÜ VİZİT RAPORU</h2><br>";
-
-    hastaListesi.forEach(h => {
-        docContent += `<p><b>HASTA: ${h.yatakNo} / ${h.hastaID}</b> ${h.yatisGunu ? '[Gün: '+h.yatisGunu+']' : ''} - ${h.tarih} ${h.saat}</p>`;
+        if (hastaListesi.length === 0) return alert('Liste boş!');
         
-        let lab = [];
-        if(h.hb) lab.push(`Hb:${h.hb}`); if(h.wbc) lab.push(`WBC:${h.wbc}`); if(h.plt) lab.push(`PLT:${h.plt}`); if(h.krea) lab.push(`Krea:${h.krea}`); if(h.pro) lab.push(`Pro:${h.pro}`);
-        if(lab.length > 0) docContent += `<p>Lab: ${lab.join(' ')} ${h.digerLab ? '['+h.digerLab+']' : ''}</p>`;
+        let header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body>";
+        let footer = "</body></html>";
+        let docContent = "<h2>YBÜ VİZİT RAPORU</h2><br>";
 
-        let vit = [];
-        if(h.ates) vit.push(`Ateş:${h.ates}`); if(h.nabiz) vit.push(`Nb:${h.nabiz}`); if(h.ta) vit.push(`TA:${h.ta}`); if(h.spo2) vit.push(`SpO2:${h.spo2}`);
-        if(h.solunumTuru) vit.push(`Sol:${h.solunumTuru}${h.ventMod ? '('+h.ventMod+')' : ''}`);
-        if(vit.length > 0) docContent += `<p>Vital: ${vit.join(' ')}</p>`;
+        hastaListesi.forEach(h => {
+            docContent += `<p><b>HASTA: ${h.yatakNo} / ${h.hastaID}</b> ${h.yatisGunu ? '[Gün: '+h.yatisGunu+']' : ''} - ${h.tarih} ${h.saat}</p>`;
+            
+            let lab = [];
+            if(h.hb) lab.push(`Hb:${h.hb}`); if(h.wbc) lab.push(`WBC:${h.wbc}`); if(h.plt) lab.push(`PLT:${h.plt}`); if(h.krea) lab.push(`Krea:${h.krea}`); if(h.pro) lab.push(`Pro:${h.pro}`);
+            if(lab.length > 0) docContent += `<p>Lab: ${lab.join(' ')} ${h.digerLab ? '['+h.digerLab+']' : ''}</p>`;
 
-        if(h.vazopressor) docContent += `<p>Vazopressör: ${h.vazopressor}</p>`;
+            let vit = [];
+            if(h.ates) vit.push(`Ateş:${h.ates}`); if(h.nabiz) vit.push(`Nb:${h.nabiz}`); if(h.ta) vit.push(`TA:${h.ta}`); if(h.spo2) vit.push(`SpO2:${h.spo2}`);
+            if(h.solunumTuru) vit.push(`Sol:${h.solunumTuru}${h.ventMod ? '('+h.ventMod+')' : ''}`);
+            if(vit.length > 0) docContent += `<p>Vital: ${vit.join(' ')}</p>`;
 
-        let noro = [];
-        if(h.bilinc) noro.push(`Bilinç:${h.bilinc}`); if(h.gks) noro.push(`GKS:${h.gks}`); 
-        if(h.pupiller) noro.push(`Pupil:${h.pupiller}${h.pupilDiger ? '('+h.pupilDiger+')' : ''}`);
-        if(h.sedasyon) noro.push(`Sedasyon:${h.sedasyon}`);
-        if(noro.length > 0) docContent += `<p>Nöroloji: ${noro.join(' ')}</p>`;
+            if(h.vazopressor) docContent += `<p>Vazopressör: ${h.vazopressor}</p>`;
 
-        let muayene = [];
-        if(h.akciger) muayene.push(`Akciger:${h.akciger}`); if(h.sekresyon) muayene.push(`Sekresyon:${h.sekresyon}`);
-        if(h.batin) muayene.push(`Batın:${h.batin}`); if(h.bs) muayene.push(`BS:${h.bs}`);
-        if(h.gaita) muayene.push(`Gaita:${h.gaita}${h.gaitaGun ? '('+h.gaitaGun+' gün)' : ''}`);
-        if(muayene.length > 0) docContent += `<p>Muayene: ${muayene.join(' ')}</p>`;
+            let noro = [];
+            if(h.bilinc) noro.push(`Bilinç:${h.bilinc}`); if(h.gks) noro.push(`GKS:${h.gks}`); 
+            if(h.pupiller) noro.push(`Pupil:${h.pupiller}${h.pupilDiger ? '('+h.pupilDiger+')' : ''}`);
+            if(h.sedasyon) noro.push(`Sedasyon:${h.sedasyon}`);
+            if(noro.length > 0) docContent += `<p>Nöroloji: ${noro.join(' ')}</p>`;
 
-        if(h.ekstremite !== 'Doğal' || h.ekstAciklama) docContent += `<p>Ekstremite: ${h.ekstremite} ${h.ekstAciklama ? '['+h.ekstAciklama+']' : ''}</p>`;
+            let muayene = [];
+            if(h.akciger) muayene.push(`Akciger:${h.akciger}`); if(h.sekresyon) muayene.push(`Sekresyon:${h.sekresyon}`);
+            if(h.batin) muayene.push(`Batın:${h.batin}`); if(h.bs) muayene.push(`BS:${h.bs}`);
+            if(h.gaita) muayene.push(`Gaita:${h.gaita}${h.gaitaGun ? '('+h.gaitaGun+' gün)' : ''}`);
+            if(muayene.length > 0) docContent += `<p>Muayene: ${muayene.join(' ')}</p>`;
 
-        let enf = [];
-        if(h.odak) enf.push(`Odak:${h.odak}`); if(h.ab1) enf.push(h.ab1); if(h.ab2) enf.push(h.ab2); if(h.ab3) enf.push(h.ab3);
-        if(h.antifungal) enf.push(`Antifungal:${h.antifungal}`); if(h.antiviral) enf.push(`Antiviral:${h.antiviral}`);
-        if(enf.length > 0) docContent += `<p>Enfeksiyon: ${enf.join(' ')}</p>`;
+            if(h.ekstremite !== 'Doğal' || h.ekstAciklama) docContent += `<p>Ekstremite: ${h.ekstremite} ${h.ekstAciklama ? '['+h.ekstAciklama+']' : ''}</p>`;
 
-        if(h.aldigi || h.cikardigi) docContent += `<p>Sıvı: Ald:${h.aldigi} Çık:${h.cikardigi} Bil:${h.bilanco}</p>`;
-        if(h.beslenmeTip) docContent += `<p>Beslenme: ${h.beslenmeTip} ${h.beslenmeDetay ? '['+h.beslenmeDetay+']' : ''}</p>`;
-        if(h.antikoagulasyon) docContent += `<p>Antikoagülan: ${h.antikoagulasyon}</p>`;
+            let enf = [];
+            if(h.odak) enf.push(`Odak:${h.odak}`); if(h.ab1) enf.push(h.ab1); if(h.ab2) enf.push(h.ab2); if(h.ab3) enf.push(h.ab3);
+            if(h.antifungal) enf.push(`Antifungal:${h.antifungal}`); if(h.antiviral) enf.push(`Antiviral:${h.antiviral}`);
+            if(enf.length > 0) docContent += `<p>Enfeksiyon: ${enf.join(' ')}</p>`;
 
-        let kons = [h.kons1, h.kons2, h.kons3, h.kons4, h.kons5].filter(x => x).join(', ');
-        if(kons) docContent += `<p>Konsültasyon: ${kons}</p>`;
-        if(h.plan) docContent += `<p>Plan: ${h.plan}</p>`;
+            if(h.aldigi || h.cikardigi) docContent += `<p>Sıvı: Ald:${h.aldigi} Çık:${h.cikardigi} Bil:${h.bilanco}</p>`;
+            if(h.beslenmeTip) docContent += `<p>Beslenme: ${h.beslenmeTip} ${h.beslenmeDetay ? '['+h.beslenmeDetay+']' : ''}</p>`;
+            if(h.antikoagulasyon) docContent += `<p>Antikoagülan: ${h.antikoagulasyon}</p>`;
 
-        docContent += `<p>-------------------------------------------</p>`;
-    });
+            let kons = [h.kons1, h.kons2, h.kons3, h.kons4, h.kons5].filter(x => x).join(', ');
+            if(kons) docContent += `<p>Konsültasyon: ${kons}</p>`;
+            if(h.plan) docContent += `<p>Plan: ${h.plan}</p>`;
 
-    let source = header + docContent + footer;
-    
-    // iPad için dosyayı bir veri URL'si (Data URI) olarak sunuyoruz
-    let url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(source);
-    
-    let link = document.createElement("a");
-    link.href = url;
-    link.download = "YBU_Rapor.doc";
-    
-    // iPad Safari için zorunlu tıklama simülasyonu
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-});
+            docContent += `<p>-------------------------------------------</p>`;
+        });
 
-        const blob = new Blob([docContent], { type: 'application/msword' });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `YBU_Rapor.doc`; a.click();
+        let source = header + docContent + footer;
+        let url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(source);
+        let link = document.createElement("a");
+        link.href = url;
+        link.download = "YBU_Rapor.doc";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 </script>
 </body>
