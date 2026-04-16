@@ -335,52 +335,75 @@
     }
 
     function tumunuWordAktar() {
-        if (hastaListesi.length === 0) return alert('Liste boş!');
-        let docContent = "YBÜ VİZİT RAPORU\n\n";
+    if (hastaListesi.length === 0) return alert('Liste boş!');
+    
+    // Word dosyasının iPad tarafından tanınması için HTML başlıkları ekliyoruz
+    let header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
+            "xmlns:w='urn:schemas-microsoft-com:office:word' "+
+            "xmlns='http://www.w3.org/TR/REC-html40'>"+
+            "<head><meta charset='utf-8'></head><body>";
+    let footer = "</body></html>";
+    
+    let docContent = "<h2>YBÜ VİZİT RAPORU</h2><br>";
 
-        hastaListesi.forEach(h => {
-            docContent += `HASTA: ${h.yatakNo} / ${h.hastaID} ${h.yatisGunu ? '[Gün: '+h.yatisGunu+']' : ''} - ${h.tarih} ${h.saat}\n`;
-            
-            let lab = [];
-            if(h.hb) lab.push(`Hb:${h.hb}`); if(h.wbc) lab.push(`WBC:${h.wbc}`); if(h.plt) lab.push(`PLT:${h.plt}`); if(h.krea) lab.push(`Krea:${h.krea}`); if(h.pro) lab.push(`Pro:${h.pro}`);
-            if(lab.length > 0) docContent += `Lab: ${lab.join(' ')} ${h.digerLab ? '['+h.digerLab+']' : ''}\n`;
+    hastaListesi.forEach(h => {
+        docContent += `<p><b>HASTA: ${h.yatakNo} / ${h.hastaID}</b> ${h.yatisGunu ? '[Gün: '+h.yatisGunu+']' : ''} - ${h.tarih} ${h.saat}</p>`;
+        
+        let lab = [];
+        if(h.hb) lab.push(`Hb:${h.hb}`); if(h.wbc) lab.push(`WBC:${h.wbc}`); if(h.plt) lab.push(`PLT:${h.plt}`); if(h.krea) lab.push(`Krea:${h.krea}`); if(h.pro) lab.push(`Pro:${h.pro}`);
+        if(lab.length > 0) docContent += `<p>Lab: ${lab.join(' ')} ${h.digerLab ? '['+h.digerLab+']' : ''}</p>`;
 
-            let vit = [];
-            if(h.ates) vit.push(`Ateş:${h.ates}`); if(h.nabiz) vit.push(`Nb:${h.nabiz}`); if(h.ta) vit.push(`TA:${h.ta}`); if(h.spo2) vit.push(`SpO2:${h.spo2}`);
-            if(h.solunumTuru) vit.push(`Sol:${h.solunumTuru}${h.ventMod ? '('+h.ventMod+')' : ''}`);
-            if(vit.length > 0) docContent += `Vital: ${vit.join(' ')}\n`;
+        let vit = [];
+        if(h.ates) vit.push(`Ateş:${h.ates}`); if(h.nabiz) vit.push(`Nb:${h.nabiz}`); if(h.ta) vit.push(`TA:${h.ta}`); if(h.spo2) vit.push(`SpO2:${h.spo2}`);
+        if(h.solunumTuru) vit.push(`Sol:${h.solunumTuru}${h.ventMod ? '('+h.ventMod+')' : ''}`);
+        if(vit.length > 0) docContent += `<p>Vital: ${vit.join(' ')}</p>`;
 
-            if(h.vazopressor) docContent += `Vazopressör: ${h.vazopressor}\n`;
+        if(h.vazopressor) docContent += `<p>Vazopressör: ${h.vazopressor}</p>`;
 
-            let noro = [];
-            if(h.bilinc) noro.push(`Bilinç:${h.bilinc}`); if(h.gks) noro.push(`GKS:${h.gks}`); 
-            if(h.pupiller) noro.push(`Pupil:${h.pupiller}${h.pupilDiger ? '('+h.pupilDiger+')' : ''}`);
-            if(h.sedasyon) noro.push(`Sedasyon:${h.sedasyon}`);
-            if(noro.length > 0) docContent += `Nöroloji: ${noro.join(' ')}\n`;
+        let noro = [];
+        if(h.bilinc) noro.push(`Bilinç:${h.bilinc}`); if(h.gks) noro.push(`GKS:${h.gks}`); 
+        if(h.pupiller) noro.push(`Pupil:${h.pupiller}${h.pupilDiger ? '('+h.pupilDiger+')' : ''}`);
+        if(h.sedasyon) noro.push(`Sedasyon:${h.sedasyon}`);
+        if(noro.length > 0) docContent += `<p>Nöroloji: ${noro.join(' ')}</p>`;
 
-            let muayene = [];
-            if(h.akciger) muayene.push(`Akciger:${h.akciger}`); if(h.sekresyon) muayene.push(`Sekresyon:${h.sekresyon}`);
-            if(h.batin) muayene.push(`Batın:${h.batin}`); if(h.bs) muayene.push(`BS:${h.bs}`);
-            if(h.gaita) muayene.push(`Gaita:${h.gaita}${h.gaitaGun ? '('+h.gaitaGun+' gün)' : ''}`);
-            if(muayene.length > 0) docContent += `Muayene: ${muayene.join(' ')}\n`;
+        let muayene = [];
+        if(h.akciger) muayene.push(`Akciger:${h.akciger}`); if(h.sekresyon) muayene.push(`Sekresyon:${h.sekresyon}`);
+        if(h.batin) muayene.push(`Batın:${h.batin}`); if(h.bs) muayene.push(`BS:${h.bs}`);
+        if(h.gaita) muayene.push(`Gaita:${h.gaita}${h.gaitaGun ? '('+h.gaitaGun+' gün)' : ''}`);
+        if(muayene.length > 0) docContent += `<p>Muayene: ${muayene.join(' ')}</p>`;
 
-            if(h.ekstremite !== 'Doğal' || h.ekstAciklama) docContent += `Ekstremite: ${h.ekstremite} ${h.ekstAciklama ? '['+h.ekstAciklama+']' : ''}\n`;
+        if(h.ekstremite !== 'Doğal' || h.ekstAciklama) docContent += `<p>Ekstremite: ${h.ekstremite} ${h.ekstAciklama ? '['+h.ekstAciklama+']' : ''}</p>`;
 
-            let enf = [];
-            if(h.odak) enf.push(`Odak:${h.odak}`); if(h.ab1) enf.push(h.ab1); if(h.ab2) enf.push(h.ab2); if(h.ab3) enf.push(h.ab3);
-            if(h.antifungal) enf.push(`Antifungal:${h.antifungal}`); if(h.antiviral) enf.push(`Antiviral:${h.antiviral}`);
-            if(enf.length > 0) docContent += `Enfeksiyon: ${enf.join(' ')}\n`;
+        let enf = [];
+        if(h.odak) enf.push(`Odak:${h.odak}`); if(h.ab1) enf.push(h.ab1); if(h.ab2) enf.push(h.ab2); if(h.ab3) enf.push(h.ab3);
+        if(h.antifungal) enf.push(`Antifungal:${h.antifungal}`); if(h.antiviral) enf.push(`Antiviral:${h.antiviral}`);
+        if(enf.length > 0) docContent += `<p>Enfeksiyon: ${enf.join(' ')}</p>`;
 
-            if(h.aldigi || h.cikardigi) docContent += `Sıvı: Ald:${h.aldigi} Çık:${h.cikardigi} Bil:${h.bilanco}\n`;
-            if(h.beslenmeTip) docContent += `Beslenme: ${h.beslenmeTip} ${h.beslenmeDetay ? '['+h.beslenmeDetay+']' : ''}\n`;
-            if(h.antikoagulasyon) docContent += `Antikoagülan: ${h.antikoagulasyon}\n`;
+        if(h.aldigi || h.cikardigi) docContent += `<p>Sıvı: Ald:${h.aldigi} Çık:${h.cikardigi} Bil:${h.bilanco}</p>`;
+        if(h.beslenmeTip) docContent += `<p>Beslenme: ${h.beslenmeTip} ${h.beslenmeDetay ? '['+h.beslenmeDetay+']' : ''}</p>`;
+        if(h.antikoagulasyon) docContent += `<p>Antikoagülan: ${h.antikoagulasyon}</p>`;
 
-            let kons = [h.kons1, h.kons2, h.kons3, h.kons4, h.kons5].filter(x => x).join(', ');
-            if(kons) docContent += `Konsültasyon: ${kons}\n`;
-            if(h.plan) docContent += `Plan: ${h.plan}\n`;
+        let kons = [h.kons1, h.kons2, h.kons3, h.kons4, h.kons5].filter(x => x).join(', ');
+        if(kons) docContent += `<p>Konsültasyon: ${kons}</p>`;
+        if(h.plan) docContent += `<p>Plan: ${h.plan}</p>`;
 
-            docContent += `-------------------------------------------\n\n`;
-        });
+        docContent += `<p>-------------------------------------------</p>`;
+    });
+
+    let source = header + docContent + footer;
+    
+    // iPad için dosyayı bir veri URL'si (Data URI) olarak sunuyoruz
+    let url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(source);
+    
+    let link = document.createElement("a");
+    link.href = url;
+    link.download = "YBU_Rapor.doc";
+    
+    // iPad Safari için zorunlu tıklama simülasyonu
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+});
 
         const blob = new Blob([docContent], { type: 'application/msword' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `YBU_Rapor.doc`; a.click();
