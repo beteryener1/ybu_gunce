@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YBÜ İzlem Paneli v7</title>
+    <title>YBÜ İzlem Paneli v8</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
@@ -19,8 +19,9 @@
         .radio-group { display: flex; flex-wrap: wrap; gap: 8px; background: #f8f9fa; padding: 6px 10px; border-radius: 5px; border: 1px solid #dee2e6; }
         .radio-group label { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; font-weight: 500; font-size: 12px; }
         input[type="radio"], input[type="checkbox"] { width: 18px; height: 18px; margin: 0; }
-        .vazo-item { display: flex; flex-direction: column; gap: 4px; background: #fff; border: 1px solid #eee; padding: 6px; border-radius: 5px; align-items: center; }
-        .vazo-item span { font-size: 10px; color: #666; font-weight: bold; }
+        .vazo-item { display: flex; flex-direction: column; gap: 2px; background: #fff; border: 1px solid #eee; padding: 6px; border-radius: 5px; align-items: center; }
+        .vazo-item input[type="number"] { width: 60px; padding: 4px; text-align: center; }
+        .vazo-item span { font-size: 9px; color: #666; font-weight: bold; }
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .btn { padding: 12px; border: none; border-radius: 25px; color: white; font-weight: bold; cursor: pointer; font-size: 15px; }
         .btn-save { background: #28a745; }
@@ -44,17 +45,18 @@
         <input type="number" id="hastaID" placeholder="Hasta No (Sayı)">
     </div>
 
-    <h3>🔬 Laboratuvar (Hb, WBCx1000, PLTx1000, Krea, Prok, Albümin)</h3>
+    <h3>🔬 Lab</h3>
     <div class="row grid-lab">
         <input type="number" step="0.1" id="labHb" placeholder="Hb">
         <input type="number" step="0.1" id="labWbc" placeholder="WBC">
         <input type="number" step="0.1" id="labPlt" placeholder="PLT">
-        <input type="number" step="0.01" id="labKrea" placeholder="Krea">
-        <input type="number" step="0.01" id="labPro" placeholder="Prok">
+        <input type="number" step="0.01" id="labKrea" placeholder="Kreatinin">
+        <input type="number" step="0.01" id="labPro" placeholder="Prokalsitonin">
         <input type="number" step="0.1" id="labAlb" placeholder="Albümin">
     </div>
+    <div class="row"><input type="text" id="labDiger" placeholder="Diğer lab (CRP, Laktat vb.)"></div>
 
-    <h3>💉 Vazopressör Desteği (kg/dk)</h3>
+    <h3>💉 Vazopressör Desteği</h3>
     <div class="row grid-vazo">
         <div class="vazo-item">
             <label><input type="checkbox" id="check_nor"> Norad.</label>
@@ -114,7 +116,7 @@
             <label><input type="radio" name="bilinc" value="Stupor"> Stupor</label>
             <input type="number" id="gks" placeholder="GKS" style="width: 60px; margin-left: 5px;">
         </div>
-        <input type="text" id="sedasyon" placeholder="Sedasyon İlacı & İnfüzyonu">
+        <input type="text" id="sedasyon" placeholder="Sedasyon detayı">
     </div>
     <div class="row" style="grid-template-columns: 2fr 1fr;">
         <div class="radio-group">
@@ -202,7 +204,7 @@
         const now = new Date();
         document.getElementById('tarih').value = now.toISOString().split('T')[0];
         document.getElementById('saat').value = now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
-        const stored = localStorage.getItem('ybu_v7_final');
+        const stored = localStorage.getItem('ybu_v8_final');
         if (stored) { hastaListesi = JSON.parse(stored); listeGuncelle(); }
     });
 
@@ -213,7 +215,7 @@
     function listeyeEkle() {
         const v = {
             tarih: getV('tarih'), saat: getV('saat'), yatak: getV('yatakNo'), id: getV('hastaID'),
-            hb: getV('labHb'), wbc: getV('labWbc'), plt: getV('labPlt'), krea: getV('labKrea'), pro: getV('labPro'), alb: getV('labAlb'),
+            hb: getV('labHb'), wbc: getV('labWbc'), plt: getV('labPlt'), krea: getV('labKrea'), pro: getV('labPro'), alb: getV('labAlb'), digL: getV('labDiger'),
             vazo: {
                 nor: { c: getC('check_nor'), d: getV('dose_nor') },
                 dop: { c: getC('check_dop'), d: getV('dose_dop') },
@@ -228,7 +230,7 @@
             anti: getV('anti'), ulser: getV('ulser'), kons: getV('kons'), plan: getV('plan')
         };
         hastaListesi.push(v);
-        localStorage.setItem('ybu_v7_final', JSON.stringify(hastaListesi));
+        localStorage.setItem('ybu_v8_final', JSON.stringify(hastaListesi));
         listeGuncelle();
         formuTemizle();
     }
@@ -242,12 +244,12 @@
         });
     }
 
-    function hastaSil(i) { if(confirm('Sil?')) { hastaListesi.splice(i, 1); localStorage.setItem('ybu_v7_final', JSON.stringify(hastaListesi)); listeGuncelle(); } }
+    function hastaSil(i) { if(confirm('Sil?')) { hastaListesi.splice(i, 1); localStorage.setItem('ybu_v8_final', JSON.stringify(hastaListesi)); listeGuncelle(); } }
     function formuTemizle() {
         document.querySelectorAll('input[type=text], input[type=number], textarea').forEach(i => { if(i.id!=='tarih'&&i.id!=='saat') i.value=''; });
         document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(r => r.checked = false);
     }
-    function listeyiTemizle() { if(confirm('Sıfırla?')) { hastaListesi = []; localStorage.removeItem('ybu_v7_final'); listeGuncelle(); } }
+    function listeyiTemizle() { if(confirm('Sıfırla?')) { hastaListesi = []; localStorage.removeItem('ybu_v8_final'); listeGuncelle(); } }
 
     function tumunuWordAktar() {
         let h = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body style='font-family:Arial; font-size:10pt;'><h2>YBÜ VİZİT RAPORU</h2><br>";
@@ -260,6 +262,7 @@
             if(x.alb) labStr += `Albümin: ${x.alb} g/L, `;
             if(x.krea) labStr += `Kreatinin: ${x.krea} mg/dL, `;
             if(x.pro) labStr += `Prokalsitonin: ${x.pro} ng/mL, `;
+            if(x.digL) labStr += `(${x.digL}), `;
             if(labStr) h += `<p><b>Laboratuvar:</b> ${labStr.replace(/, $/, "")}</p>`;
 
             let vList = [];
@@ -287,7 +290,7 @@
 
             let mStr = "";
             if(x.bs) mStr += `Bağırsak sesleri ${x.bs}. `;
-            if(x.gai) mStr += `Gaita ${x.gai}${x.gaiG ? " ("+x.gaiG+". günü)" : ""}. `;
+            if(x.gaita) mStr += `Gaita ${x.gaita}${x.gaiG ? " ("+x.gaiG+". günü)" : ""}. `;
             if(mStr) h += `<p><b>Muayene:</b> ${mStr}</p>`;
 
             let rStr = "";
