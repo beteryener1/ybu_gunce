@@ -3,41 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YBÜ İzlem Paneli</title>
+    <title>YBÜ İzlem Paneli v4</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
         body { margin: 0; padding: 10px; background: #f4f7f9; font-size: 14px; color: #333; }
         .panel { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 1000px; margin: auto; }
         h1 { font-size: 1.6rem; text-align: center; margin: 0 0 15px; color: #1e466e; }
-        
         h3 { font-size: 1rem; margin: 15px 0 8px; padding: 5px 10px; background: #e9ecef; border-radius: 5px; font-weight: 600; color: #495057; }
-        
         .row { display: grid; gap: 10px; margin-bottom: 10px; align-items: center; }
         .grid-header { grid-template-columns: 1fr 1fr 1fr 2fr; }
         .grid-lab-1 { grid-template-columns: 1fr 1fr 1fr; }
         .grid-lab-2 { grid-template-columns: 1fr 1fr 2fr; }
-        .grid-vitals-header { grid-template-columns: 1fr 2fr; }
-        .grid-vitals-inputs { grid-template-columns: repeat(4, 1fr); }
-        .grid-noro { grid-template-columns: 3fr 1fr 2fr; }
-        .grid-renal { grid-template-columns: 1.5fr 2fr 1.5fr; }
-
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 6px; font-size: 15px; }
         .radio-group { display: flex; flex-wrap: wrap; gap: 10px; background: #f8f9fa; padding: 8px 12px; border-radius: 6px; border: 1px solid #dee2e6; }
         .radio-group label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; font-weight: 500; }
-        input[type="radio"] { width: 20px; height: 20px; margin: 0; }
-
-        .section-box { border: 1px solid #e0e0e0; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+        input[type="radio"] { width: 20px; height: 20px; }
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .btn { padding: 15px; border: none; border-radius: 30px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; transition: opacity 0.2s; }
-        .btn:active { opacity: 0.8; }
+        .btn { padding: 15px; border: none; border-radius: 30px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
         .btn-save { background: #28a745; }
         .btn-clear { background: #6c757d; }
         .btn-word { background: #0d6efd; }
         .btn-delete { background: #dc3545; }
-        
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; }
+        td { padding: 10px; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
@@ -52,29 +41,29 @@
         <div><label>Hasta ID</label><input type="text" id="hastaID"></div>
     </div>
 
-    <h3>🔬 Lab</h3>
-    <div class="section-box" style="background: #f0f7ff;">
+    <h3>🔬 Laboratuvar Bulguları</h3>
+    <div style="border: 1px solid #e0e0e0; padding: 10px; border-radius: 8px; background: #f0f7ff;">
         <div class="row grid-lab-1">
-            <input type="text" id="labHb" placeholder="Hb">
-            <input type="text" id="labWbc" placeholder="WBC">
-            <input type="text" id="labPlt" placeholder="PLT">
+            <input type="text" id="labHb" placeholder="Hb (g/dL)">
+            <input type="text" id="labWbc" placeholder="WBC (/µL)">
+            <input type="text" id="labPlt" placeholder="PLT (/µL)">
         </div>
         <div class="row grid-lab-2">
-            <input type="text" id="labKrea" placeholder="Kreatinin">
-            <input type="text" id="labPro" placeholder="Prokalsitonin">
+            <input type="text" id="labKrea" placeholder="Kreatinin (mg/dL)">
+            <input type="text" id="labPro" placeholder="Prokalsitonin (ng/mL)">
             <input type="text" id="labDiger" placeholder="Diğer lab (CRP, Laktat vb.)">
         </div>
     </div>
 
-    <div class="row grid-vitals-header">
+    <div class="row" style="grid-template-columns: 1fr 2fr; margin-top:10px;">
         <h3>💓 Vitaller</h3>
         <input type="text" id="vazopressor" placeholder="Vazopressör & Doz">
     </div>
-    <div class="row grid-vitals-inputs">
+    <div class="row" style="grid-template-columns: repeat(4, 1fr);">
         <input type="text" id="ates" placeholder="Ateş (C)">
         <input type="text" id="nabiz" placeholder="Nabız (dk)">
         <input type="text" id="kb" placeholder="Kan Basıncı">
-        <input type="text" id="spo2" placeholder="SpO2">
+        <input type="text" id="spo2" placeholder="SpO2 (%)">
     </div>
 
     <h3>🫁 Solunum Sistemi</h3>
@@ -88,7 +77,7 @@
         </div>
         <input type="text" id="sekresyon" placeholder="Sekresyon detayı">
     </div>
-    <div class="row" style="grid-template-columns: 1fr 1fr;">
+    <div class="row" style="grid-template-columns: 1.5fr 1fr;">
         <div class="radio-group">
             <label><input type="radio" name="solTuru" value="Spontan"> Spontan</label>
             <label><input type="radio" name="solTuru" value="Nazal"> Nazal</label>
@@ -104,10 +93,8 @@
         </div>
     </div>
 
-    <div class="row" style="grid-template-columns: 1fr 2fr;">
-        <h3>🧠 Nöroloji</h3>
-        <input type="text" id="sedasyon" placeholder="Sedasyon">
-    </div>
+    <h3>🧠 Nöroloji</h3>
+    <div class="row"><input type="text" id="sedasyon" placeholder="Sedasyon İlacı (Örn: Dormicum 2)"></div>
     <div class="row">
         <div class="radio-group">
             <label><input type="radio" name="bilinc" value="Açık"> Açık</label>
@@ -128,65 +115,53 @@
         <input type="text" id="pupilDiger" placeholder="Diğer açıklama">
     </div>
 
-    <h3>腹 Abdomen</h3>
+    <h3>腹 Abdomen & Ekstremite</h3>
     <div class="row">
         <div class="radio-group">
             <label>Bağırsak:</label>
             <label><input type="radio" name="bs" value="Normoaktif"> Normo</label>
             <label><input type="radio" name="bs" value="Hipoaktif"> Hipo</label>
-            <label><input type="radio" name="bs" value="Hiperaktif"> Hiper</label>
             <label><input type="radio" name="bs" value="Yok"> Yok</label>
         </div>
-    </div>
-    <div class="row" style="grid-template-columns: 2fr 1fr;">
         <div class="radio-group">
             <label>Gaita:</label>
             <label><input type="radio" name="gaita" value="Normal"> Norm</label>
-            <label><input type="radio" name="gaita" value="Yumuşak"> Yum</label>
             <label><input type="radio" name="gaita" value="Diyare"> Diya</label>
-            <label><input type="radio" name="gaita" value="Melena"> Mel</label>
             <label><input type="radio" name="gaita" value="Yok"> Yok</label>
+            <input type="text" id="gaitaGun" placeholder="Gün" style="width:50px;">
         </div>
-        <input type="text" id="gaitaGun" placeholder="Kaç gündür?">
     </div>
-
-    <div class="row" style="grid-template-columns: 1.5fr 2fr;">
+    <div class="row" style="grid-template-columns: 1fr 2fr;">
         <div class="radio-group">
             <label>Ekstremite:</label>
             <label><input type="radio" name="ekst" value="Doğal"> Doğal</label>
-            <label><input type="radio" name="ekst" value="Patol"> Patol</label>
+            <label><input type="radio" name="ekst" value="Patolojik"> Patol</label>
         </div>
-        <input type="text" id="ekstAciklama" placeholder="Patolojik bulgu detayı">
+        <input type="text" id="ekstAciklama" placeholder="Bulgu detayı">
     </div>
 
+    <h3>🦠 Enfeksiyon & Renal</h3>
     <div class="row" style="grid-template-columns: 1fr 2fr;">
-        <h3>🦠 Enfeksiyon</h3>
         <input type="text" id="enfOdak" placeholder="Enfeksiyon Odağı">
+        <div class="row" style="grid-template-columns: repeat(3, 1fr); margin-bottom:0;">
+            <input type="text" id="ab1" placeholder="AB 1">
+            <input type="text" id="ab2" placeholder="AB 2">
+            <input type="text" id="ab3" placeholder="AB 3">
+        </div>
     </div>
     <div class="row" style="grid-template-columns: 1fr 1fr 1fr;">
-        <input type="text" id="ab1" placeholder="Antibiyotik 1">
-        <input type="text" id="ab2" placeholder="Antibiyotik 2">
-        <input type="text" id="ab3" placeholder="Antibiyotik 3">
-    </div>
-    <div class="row" style="grid-template-columns: 1fr 1fr;">
         <input type="text" id="af" placeholder="Antifungal">
         <input type="text" id="av" placeholder="Antiviral">
+        <div class="radio-group"><label><input type="radio" name="renal" value="Spontan"> Spon</label><label><input type="radio" name="renal" value="HD"> HD</label></div>
     </div>
-
-    <h3>🧪 Renal & Beslenme</h3>
-    <div class="row grid-renal">
-        <div class="radio-group">
-            <label><input type="radio" name="renal" value="Spontan"> Spon</label>
-            <label><input type="radio" name="renal" value="HD"> HD</label>
-            <label><input type="radio" name="renal" value="CRRT"> CRRT</label>
-        </div>
-        <input type="text" id="siviDenge" placeholder="Sıvı: Aldığı/Çıkardığı">
-        <div class="radio-box" style="display:flex; gap:5px;"><input type="checkbox" id="kanama">Kanama<input type="text" id="kanamaMiktar" placeholder="Miktar" style="width:70px;"></div>
-    </div>
-
     <div class="row" style="grid-template-columns: 1.5fr 1fr;">
+        <input type="text" id="siviDenge" placeholder="Sıvı Dengesi (Aldığı/Çıkardığı)">
+        <div class="radio-group" style="background:#ffecec;"><label><input type="checkbox" id="kanama"> Kanama</label><input type="text" id="kanamaMiktar" placeholder="Miktar" style="width:70px;"></div>
+    </div>
+
+    <h3>🍎 Beslenme & Plan</h3>
+    <div class="row">
         <div class="radio-group">
-            <label>Beslenme:</label>
             <label><input type="radio" name="beslenme" value="Oral"> Oral</label>
             <label><input type="radio" name="beslenme" value="Enteral"> Ent</label>
             <label><input type="radio" name="beslenme" value="TPN"> TPN</label>
@@ -194,37 +169,22 @@
         </div>
         <input type="text" id="beslenmeDoz" placeholder="Doz / İçerik">
     </div>
+    <div class="row" style="grid-template-columns: 1fr 1fr;"><input type="text" id="antikoagulan" placeholder="Antikoagülasyon"><input type="text" id="ulser" placeholder="Ülser Prof."></div>
+    <div class="row"><input type="text" id="kons" placeholder="Konsültasyonlar (Örn: Nefroloji)"></div>
+    <textarea id="plan" rows="2" placeholder="Genel Plan"></textarea>
 
-    <div class="row" style="grid-template-columns: 1fr 1fr;">
-        <input type="text" id="antikoagulan" placeholder="Antikoagülasyon">
-        <input type="text" id="ulser" placeholder="Ülser Profilaksisi">
-    </div>
-    <div class="row"><input type="text" id="kons" placeholder="Konsültasyonlar"></div>
-    <div class="row"><textarea id="plan" rows="2" placeholder="Plan / Notlar"></textarea></div>
-
-    <div class="btn-group">
-        <button class="btn btn-save" onclick="listeyeEkle()">➕ HASTAYI KAYDET</button>
-        <button class="btn btn-clear" onclick="formuTemizle()">🔄 TEMİZLE</button>
-    </div>
-
-    <table id="vizitTablosu">
-        <tbody id="listeTbody"></tbody>
-    </table>
-
-    <div class="btn-group">
-        <button class="btn btn-word" onclick="tumunuWordAktar()">📄 WORD AKTAR</button>
-        <button class="btn btn-delete" onclick="listeyiTemizle()">🗑️ LİSTEYİ SİL</button>
-    </div>
+    <div class="btn-group"><button class="btn btn-save" onclick="listeyeEkle()">➕ KAYDET</button><button class="btn btn-clear" onclick="formuTemizle()">🔄 TEMİZLE</button></div>
+    <div class="list-area"><table id="vizitTablosu"><tbody id="listeTbody"></tbody></table></div>
+    <div class="btn-group"><button class="btn btn-word" onclick="tumunuWordAktar()">📄 WORD AKTAR</button><button class="btn btn-delete" onclick="listeyiTemizle()">🗑️ LİSTEYİ SİL</button></div>
 </div>
 
 <script>
     let hastaListesi = [];
-
     window.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         document.getElementById('tarih').value = now.toISOString().split('T')[0];
         document.getElementById('saat').value = now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
-        const stored = localStorage.getItem('ybu_v_final_secure');
+        const stored = localStorage.getItem('ybu_v5_final');
         if (stored) { hastaListesi = JSON.parse(stored); listeGuncelle(); }
     });
 
@@ -239,13 +199,13 @@
             akc: getR('akc'), sek: getV('sekresyon'), solT: getR('solTuru'), vMod: getR('vMod'),
             bil: getR('bilinc'), gks: getV('gks'), pup: getR('pupil'), pupA: getV('pupilDiger'), sed: getV('sedasyon'),
             bs: getR('bs'), gai: getR('gaita'), gaiG: getV('gaitaGun'), ekst: getR('ekst'), eksA: getV('ekstAciklama'),
-            renal: getR('renal'), sivi: getV('siviDenge'), kanama: document.getElementById('kanama').checked ? 'Var ('+getV('kanamaMiktar')+')' : '',
+            renal: getR('renal'), sivi: getV('siviDenge'), kanama: document.getElementById('kanama').checked ? getV('kanamaMiktar') : '',
             bes: getR('beslenme'), besD: getV('beslenmeDoz'), odak: getV('enfOdak'), ab1: getV('ab1'), ab2: getV('ab2'), ab3: getV('ab3'), af: getV('af'), av: getV('av'),
             anti: getV('antikoagulan'), ulser: getV('ulser'), kons: getV('kons'), plan: getV('plan')
         };
         if(!v.yatak && !v.id) return alert('Veri girin!');
         hastaListesi.push(v);
-        localStorage.setItem('ybu_v_final_secure', JSON.stringify(hastaListesi));
+        localStorage.setItem('ybu_v5_final', JSON.stringify(hastaListesi));
         listeGuncelle();
         formuTemizle();
     }
@@ -259,34 +219,64 @@
         });
     }
 
-    function hastaSil(i) { if(confirm('Sil?')) { hastaListesi.splice(i, 1); localStorage.setItem('ybu_v_final_secure', JSON.stringify(hastaListesi)); listeGuncelle(); } }
-    
-    function formuTemizle() {
-        document.querySelectorAll('input[type=text], textarea').forEach(i => { if(i.id!=='tarih' && i.id!=='saat') i.value=''; });
-        document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(r => r.checked = false);
-    }
-
-    function listeyiTemizle() { if(confirm('Sıfırla?')) { hastaListesi = []; localStorage.removeItem('ybu_v_final_secure'); listeGuncelle(); } }
+    function hastaSil(i) { if(confirm('Sil?')) { hastaListesi.splice(i, 1); localStorage.setItem('ybu_v5_final', JSON.stringify(hastaListesi)); listeGuncelle(); } }
+    function formuTemizle() { document.querySelectorAll('input[type=text], textarea').forEach(i => { if(i.id!=='tarih'&&i.id!=='saat') i.value=''; }); document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(r => r.checked = false); }
+    function listeyiTemizle() { if(confirm('Sıfırla?')) { hastaListesi = []; localStorage.removeItem('ybu_v5_final'); listeGuncelle(); } }
 
     function tumunuWordAktar() {
         if (hastaListesi.length === 0) return alert('Boş!');
         let h = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body style='font-family:Arial; font-size:10pt;'>";
         let c = "<h2>YBÜ VİZİT RAPORU</h2><br>";
         hastaListesi.forEach(x => {
-            c += `<p><b>${x.yatak} / ${x.id}</b> - ${x.tarih} ${x.saat}</p>`;
-            if(x.hb) c += `<p>Lab: Hb:${x.hb} WBC:${x.wbc} PLT:${x.plt} Krea:${x.krea} Prok:${x.pro} ${x.digL}</p>`;
-            c += `<p>Vital: At:${x.at} Nb:${x.nb} KB:${x.kb} SpO2:${x.sp} Vazo:${x.vazo}</p>`;
-            c += `<p>Solunum: Akc:${x.akc} [${x.sek}] Tür:${x.solT} ${x.vMod||''}</p>`;
-            c += `<p>Nöroloji: Bil:${x.bil} GKS:${x.gks} Pupil:${x.pup} [${x.pupA}] Sed:${x.sed}</p>`;
-            c += `<p>Muayene: BS:${x.bs} Gaita:${x.gai} [${x.gaiG}g] Ekst:${x.ekst} [${x.eksA}]</p>`;
-            c += `<p>Renal/Sıvı/Bes: ${x.renal} | Sıvı:${x.sivi} | Kanama:${x.kanama} | Bes:${x.bes} [${x.besD}]</p>`;
-            c += `<p>Enfeksiyon: Odak:${x.odak} AB:${x.ab1}, ${x.ab2}, ${x.ab3} | AF:${x.af} | AV:${x.av}</p>`;
-            if(x.anti || x.ulser || x.kons || x.plan) c += `<p>Plan: ${x.anti} | Ülser:${x.ulser} | Kons:${x.kons} | Not:${x.plan}</p>`;
-            c += "<hr>";
+            c += `<p><b>HASTA: ${x.yatak} / ${x.id}</b> - ${x.tarih} ${x.saat}</p>`;
+            if(x.hb||x.wbc) c += `<p><b>Laboratuvar:</b> Hb: ${x.hb} g/dL, WBC: ${x.wbc} /µL, PLT: ${x.plt} /µL, Kreatinin: ${x.krea} mg/dL, Prokalsitonin: ${x.pro} ng/mL ${x.digL ? '('+x.digL+')' : ''}</p>`;
+            if(x.at||x.kb) c += `<p><b>Vitaller:</b> Ateş: ${x.at}°C, Nabız: ${x.nb}/dk, Kan Basıncı: ${x.kb}, SpO2: %${x.sp}. ${x.vazo ? 'Vazopressör desteği: '+x.vazo : ''}</p>`;
+            
+            let solStr = `<b>Solunum:</b> `;
+            if(x.akc === 'Ral') solStr += "Akciğer seslerinde ralleri var. ";
+            else if(x.akc) solStr += "Akciğer sesleri " + x.akc + ". ";
+            if(x.sek) solStr += "Sekresyon: " + x.sek + ". ";
+            if(x.solT) {
+                if(x.solT === 'IMV') solStr += "IMV desteğinde; Mod: " + (x.vMod || 'Belirtilmedi');
+                else solStr += x.solT + " desteğinde.";
+            }
+            c += `<p>${solStr}</p>`;
+
+            let noroStr = `<b>Nöroloji:</b> Bilinç ${x.bil || 'belirtilmedi'}. `;
+            if(x.gks) noroStr += "GKS: " + x.gks + ". ";
+            if(x.pup) noroStr += "Pupiller " + x.pup + (x.pupA ? ' ('+x.pupA+')' : '') + ". ";
+            if(x.sed) noroStr += x.sed + " infüzyonu altında.";
+            c += `<p>${noroStr}</p>`;
+
+            let muayStr = `<b>Muayene:</b> `;
+            if(x.bs) muayStr += "Bağırsak sesleri " + x.bs + ". ";
+            if(x.gaita) muayStr += "Gaita " + x.gaita + (x.gaiG ? ' ('+x.gaiG+'. günü)' : '') + ". ";
+            if(x.ekst) muayStr += "Ekstremiteler " + x.ekst + (x.eksA ? ' ('+x.eksA+')' : '') + ". ";
+            c += `<p>${muayStr}</p>`;
+
+            let renalStr = `<b>Renal & Beslenme:</b> `;
+            if(x.renal) renalStr += (x.renal === 'Spontan' ? 'Spontan idrar çıkışı var. ' : x.renal + ' uygulanıyor. ');
+            if(x.sivi) renalStr += "Sıvı dengesi: " + x.sivi + ". ";
+            if(x.kanama) renalStr += "Kanama mevcut: " + x.kanama + ". ";
+            if(x.bes) renalStr += x.bes + " besleniyor" + (x.besD ? ' ('+x.besD+')' : '') + ". ";
+            c += `<p>${renalStr}</p>`;
+
+            let enfStr = `<b>Enfeksiyon:</b> `;
+            if(x.odak) enfStr += "Odak: " + x.odak + ". ";
+            let abs = [x.ab1, x.ab2, x.ab3, x.af, x.av].filter(a => a).join(', ');
+            enfStr += abs ? "Tedavi: " + abs : "Antibiyoterapi almıyor.";
+            c += `<p>${enfStr}</p>`;
+
+            let planStr = `<b>Plan:</b> `;
+            if(x.anti) planStr += "Antikoagülasyon: " + x.anti + ", ";
+            if(x.ulser) planStr += "Ülser Profilaksisi: " + x.ulser + ", ";
+            if(x.kons) planStr += x.kons + " birimine danışıldı/konsülte edildi. ";
+            if(x.plan) planStr += "Notlar: " + x.plan;
+            c += `<p>${planStr.replace(/, $/, '')}</p><hr>`;
         });
         const blob = new Blob([h + c + "</body></html>"], { type: 'application/msword' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = "YBU_Rapor.doc";
+        const a = document.createElement('a'); a.href = url; a.download = "YBU_Vizit_Raporu.doc";
         document.body.appendChild(a); a.click();
     }
 </script>
