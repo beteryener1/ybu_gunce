@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YBÜ İzlem Paneli v19</title>
+    <title>YBÜ İzlem Paneli v20</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
@@ -30,7 +30,7 @@
 </head>
 <body>
 <div class="panel">
-    <h1>🏥 YBÜ İZLEM PANELİ v19</h1>
+    <h1>🏥 YBÜ İZLEM PANELİ v20</h1>
 
     <div class="row grid-2">
         <input type="date" id="tarih">
@@ -176,7 +176,7 @@
         const now = new Date();
         document.getElementById('tarih').value = now.toISOString().split('T')[0];
         document.getElementById('saat').value = now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
-        const stored = localStorage.getItem('ybu_v19');
+        const stored = localStorage.getItem('ybu_v20');
         if (stored) { hastaListesi = JSON.parse(stored); listeGuncelle(); }
     });
 
@@ -217,7 +217,7 @@
             anti: getV('anti'), kons: getV('kons'), plan: getV('plan')
         };
         hastaListesi.push(v);
-        localStorage.setItem('ybu_v19', JSON.stringify(hastaListesi));
+        localStorage.setItem('ybu_v20', JSON.stringify(hastaListesi));
         listeGuncelle();
         formuTemizle();
     }
@@ -285,9 +285,11 @@
             let akcSes = x.akc.length > 0 ? (x.akc.includes('Ral') ? 'Akciğerlerinde raller mevcut' : 'Akciğer sesleri ' + x.akc.join(', ')) : 'Akciğer sesleri doğal';
             p += akcSes + '. ' + (x.sek ? x.sek + '. ' : '');
             
-            // Yeni Solunum Mantığı
+            // v20 Solunum Mantığı
             if(x.solT === 'Spontan') {
                 p += 'Spontan solunumda. ';
+            } else if(x.solT === 'Nazal') {
+                p += 'Nazal oksijen desteğinde. ';
             } else if(x.solT) {
                 p += x.solT + (x.vMod ? ' ('+x.vMod+')' : '') + ' desteğinde. ';
             }
@@ -309,17 +311,17 @@
             if(x.enf || ilaçar) p += (x.enf ? 'Enfeksiyon odağı: ' + x.enf + '. ' : '') + (ilaçar ? 'Tedavi: ' + ilaçar + '. ' : '');
             
             if(x.anti) p += x.anti + ' uygulandı. ';
-            if(x.kons) p += x.kons + ' istendi. ';
+            if(x.kons) p += x.kons + ' danışıldı. '; // v20 Güncellemesi
             if(x.plan) p += x.plan;
 
             p += ' Hastanın bakımları yapılmıştır.</p><hr>';
             doc += p;
         });
         let blob = new Blob([doc + "</body></html>"], {type:'application/msword'});
-        let link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "ybu_vizit_v19.doc"; link.click();
+        let link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "ybu_vizit_v20.doc"; link.click();
     }
-    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v19', JSON.stringify(hastaListesi)); listeGuncelle(); }
-    function listeSil() { if(confirm('Tüm listeyi silmek istediğinize emin misiniz?')) { hastaListesi = []; localStorage.removeItem('ybu_v19'); listeGuncelle(); } }
+    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v20', JSON.stringify(hastaListesi)); listeGuncelle(); }
+    function listeSil() { if(confirm('Tüm listeyi silmek istediğinize emin misiniz?')) { hastaListesi = []; localStorage.removeItem('ybu_v20'); listeGuncelle(); } }
     function formuTemizle() { 
         document.querySelectorAll('input[type=text], input[type=number], textarea').forEach(i => i.value=''); 
         document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(r => r.checked = false);
