@@ -3,44 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YBÜ İzlem v23</title>
+    <title>YBÜ İzlem v24</title>
     <style>
-        * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
+        * { box-sizing: border-box; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; padding: 10px; background: #f0f4f8; font-size: 15px; }
         
-        /* Şifre Ekranı */
-        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1e466e; display: flex; align-items: center; justify-content: center; z-index: 2000; }
-        .login-box { background: white; padding: 25px; border-radius: 15px; text-align: center; width: 85%; }
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1e466e; display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .login-box { background: white; padding: 25px; border-radius: 15px; text-align: center; width: 85%; max-width: 320px; }
         
-        .panel { display: none; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 100%; }
-        h3 { font-size: 0.85rem; margin: 15px 0 8px; padding: 6px; background: #e9ecef; border-radius: 5px; font-weight: bold; text-transform: uppercase; color: #495057; }
+        .panel { display: none; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; }
+        h3 { font-size: 0.85rem; margin: 15px 0 8px; padding: 8px; background: #e9ecef; border-radius: 5px; font-weight: bold; text-transform: uppercase; color: #495057; }
         
-        .row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .row { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; position: relative; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
         
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; background: #fff; -webkit-appearance: none; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; background: #fff; position: relative; z-index: 1; }
         
-        /* Sesli Giriş Buton Tasarımı */
-        .mic-wrap { display: flex; gap: 5px; align-items: center; width: 100%; }
-        .mic-btn { background: #f8f9fa; border: 1px solid #ccc; border-radius: 8px; padding: 10px; font-size: 1.2rem; cursor: pointer; flex-shrink: 0; }
-        .mic-btn.active { background: #ffcccc; animation: pulse 1s infinite; }
+        .mic-wrap { display: flex; gap: 8px; align-items: center; width: 100%; position: relative; }
+        .mic-btn { background: #f8f9fa; border: 1px solid #ccc; border-radius: 8px; padding: 12px; font-size: 1.4rem; cursor: pointer; flex-shrink: 0; z-index: 2; }
+        .mic-btn.active { background: #ffcccc; animation: pulse 1s infinite; border-color: red; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        .check-group { display: flex; flex-wrap: wrap; gap: 8px; background: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px solid #dee2e6; }
-        .check-group label { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 500; min-width: 30%; }
-        input[type="checkbox"], input[type="radio"] { width: 22px; height: 22px; margin: 0; flex-shrink: 0; }
+        .check-group { display: flex; flex-wrap: wrap; gap: 12px; background: #f8f9fa; padding: 12px; border-radius: 8px; border: 1px solid #dee2e6; width: 100%; }
+        .check-group label { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; min-width: 40%; cursor: pointer; padding: 5px 0; }
+        input[type="checkbox"], input[type="radio"] { width: 24px; height: 24px; margin: 0; flex-shrink: 0; cursor: pointer; position: relative; z-index: 5; }
 
-        .vazo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .vazo-box { background: #fff; border: 1px solid #dee2e6; padding: 8px; border-radius: 8px; text-align: center; }
-        .vazo-box input { width: 100%; text-align: center; margin-top: 5px; padding: 8px; }
-        .vazo-box span { font-size: 10px; color: #777; font-weight: bold; }
+        .vazo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .vazo-box { background: #fff; border: 1px solid #dee2e6; padding: 10px; border-radius: 8px; text-align: center; }
+        .vazo-box input { width: 100%; text-align: center; margin-top: 5px; }
 
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .btn { padding: 15px; border: none; border-radius: 25px; color: white; font-weight: bold; font-size: 15px; cursor: pointer; text-align: center; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .btn { padding: 16px; border: none; border-radius: 25px; color: white; font-weight: bold; font-size: 16px; cursor: pointer; text-align: center; -webkit-appearance: none; }
         .hidden { display: none; }
         
-        #liste { margin-top: 15px; border-top: 1px solid #eee; }
-        .liste-item { padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+        #liste { margin-top: 20px; border-top: 2px solid #f0f4f8; }
+        .liste-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; margin-top: 5px; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -54,7 +51,7 @@
 </div>
 
 <div class="panel" id="mainPanel">
-    <h1>🏥 YBÜ İZLEM v23</h1>
+    <h1>🏥 YBÜ İZLEM v24</h1>
 
     <div class="row">
         <div class="grid-2">
@@ -83,12 +80,12 @@
     <div class="row" style="margin-top:10px;">
         <input type="number" id="gks" placeholder="GKS Skoru">
         <div class="mic-wrap">
-            <input type="text" id="sedasyonInfo" placeholder="Sedasyon ve Dozu">
+            <input type="text" id="sedasyonInfo" placeholder="Sedasyon Bilgisi">
             <button class="mic-btn" onclick="startSpeech('sedasyonInfo')">🎤</button>
         </div>
     </div>
     <div class="check-group">
-        <label>Pupiller:</label>
+        <label>Pupil:</label>
         <label><input type="radio" name="pupil" value="İzokorik"> İzo</label>
         <label><input type="radio" name="pupil" value="Anizokorik"> Ani</label>
         <label><input type="radio" name="pupil" value="Midriyatik"> Mid</label>
@@ -105,10 +102,6 @@
             <input type="number" step="0.1" id="labPlt" placeholder="PLT (x1000)" max="999">
             <input type="number" step="0.01" id="labKrea" placeholder="Kreatinin">
         </div>
-        <div class="grid-2">
-            <input type="number" step="0.01" id="labPro" placeholder="Prokal">
-            <input type="number" step="0.1" id="labAlb" placeholder="Alb (g/L)">
-        </div>
         <div class="mic-wrap">
             <input type="text" id="labDiger" placeholder="Diğer lab bulguları">
             <button class="mic-btn" onclick="startSpeech('labDiger')">🎤</button>
@@ -123,7 +116,7 @@
         <div class="vazo-box"><label><input type="checkbox" id="c_adr"> Adren.</label><input type="number" step="0.01" id="d_adr"><span>mcg/kg/d</span></div>
     </div>
 
-    <h3>🫁 Solunum Sistemi</h3>
+    <h3>🫁 Solunum</h3>
     <div class="check-group">
         <label><input type="checkbox" name="akc" value="Doğal"> Doğal</label>
         <label><input type="checkbox" name="akc" value="Ral"> Ral</label>
@@ -134,89 +127,62 @@
         <input type="text" id="sekresyon" placeholder="Sekresyon detayı">
         <button class="mic-btn" onclick="startSpeech('sekresyon')">🎤</button>
     </div>
-    <div class="check-group" style="margin-top:10px;">
+    <div class="check-group">
         <label><input type="radio" name="solTuru" value="Spontan"> Spontan</label>
         <label><input type="radio" name="solTuru" value="Nazal"> Nazal</label>
         <label><input type="radio" name="solTuru" value="HFNO"> HFNO</label>
         <label><input type="radio" name="solTuru" value="CPAP"> CPAP</label>
         <label><input type="radio" name="solTuru" value="IMV" id="imvCheck"> IMV</label>
     </div>
-    <div id="imvModBox" class="hidden check-group" style="background:#fff3cd; margin-top:10px;">
+    <div id="imvModBox" class="hidden check-group" style="background:#fff3cd;">
         <label><input type="radio" name="vMod" value="AC/PRVC"> AC/PRVC</label>
         <label><input type="radio" name="vMod" value="PSV"> PSV</label>
         <label><input type="radio" name="vMod" value="SIMV"> SIMV</label>
         <label><input type="radio" name="vMod" value="CPAP"> CPAP</label>
     </div>
 
-    <h3>腹 Abdomen & Renal & Beslenme</h3>
+    <h3>腹 Abdomen & Renal</h3>
     <div class="check-group">
-        <label>Barsak:</label>
-        <label><input type="radio" name="bs" value="Normal"> N</label>
-        <label><input type="radio" name="bs" value="Hiperaktif"> Hiper</label>
-        <label><input type="radio" name="bs" value="Hipoaktif"> Hipo</label>
+        <label><input type="radio" name="bs" value="Normal"> Normal</label>
+        <label><input type="radio" name="bs" value="Hiperaktif"> Hiper.</label>
+        <label><input type="radio" name="bs" value="Hipoaktif"> Hipo.</label>
         <label><input type="radio" name="bs" value="Yok"> Yok</label>
     </div>
     <div class="check-group" style="margin-top:10px;">
-        <label>Gaita:</label>
         <label><input type="radio" name="gaita" value="Normal"> N</label>
-        <label><input type="radio" name="gaita" value="Diyare"> Diyare</label>
-        <label><input type="radio" name="gaita" value="Melena"> Melena</label>
+        <label><input type="radio" name="gaita" value="Diyare"> D</label>
+        <label><input type="radio" name="gaita" value="Melena"> M</label>
         <label><input type="radio" name="gaita" value="Yok"> Yok</label>
         <input type="number" id="gaitaGun" placeholder="Gün" style="width:60px;">
     </div>
-    <div class="check-group" style="margin-top:10px;">
-        <label>Renal:</label>
+    <div class="check-group">
         <label><input type="radio" name="renal" value="Spontan"> Spon</label>
         <label><input type="radio" name="renal" value="HD"> HD</label>
         <label><input type="radio" name="renal" value="CRRT"> CRRT</label>
     </div>
-    <div class="grid-2" style="margin-top:10px;">
-        <input type="text" id="sivi" placeholder="Aldığı/Çıkardığı">
-        <div class="check-group"><label><input type="radio" name="bes" value="Oral"> Oral</label><label><input type="radio" name="bes" value="Ent"> Ent</label></div>
-    </div>
-    <div class="row" style="margin-top:10px;">
-        <div class="mic-wrap">
-            <input type="text" id="besUrun" placeholder="Beslenme Ürünü/Rejim">
-            <button class="mic-btn" onclick="startSpeech('besUrun')">🎤</button>
-        </div>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <input type="number" id="besHiz" placeholder="Doz">
-            <span style="white-space:nowrap; font-size:12px;">cc/saat</span>
-        </div>
-    </div>
 
-    <h3>💊 Enfeksiyon & Plan</h3>
-    <div class="mic-wrap">
-        <input type="text" id="enfOdak" placeholder="Enfeksiyon Odağı">
-        <button class="mic-btn" onclick="startSpeech('enfOdak')">🎤</button>
-    </div>
-    <div class="grid-2" style="margin-top:10px;">
-        <input type="text" id="ab1" placeholder="AB 1"><input type="number" id="ab1G" placeholder="G">
-        <input type="text" id="ab2" placeholder="AB 2"><input type="number" id="ab2G" placeholder="G">
+    <h3>🍎 Beslenme</h3>
+    <div class="check-group">
+        <label><input type="radio" name="bes" value="Oral"> Oral</label>
+        <label><input type="radio" name="bes" value="Enteral"> Ent</label>
+        <label><input type="radio" name="bes" value="TPN"> TPN</label>
+        <label><input type="radio" name="bes" value="Aç"> Aç</label>
     </div>
     <div class="mic-wrap" style="margin-top:10px;">
-        <input type="text" id="anti" placeholder="Antikoagülasyon">
-        <button class="mic-btn" onclick="startSpeech('anti')">🎤</button>
-    </div>
-    <div class="mic-wrap" style="margin-top:10px;">
-        <input type="text" id="kons" placeholder="Konsültasyonlar">
-        <button class="mic-btn" onclick="startSpeech('kons')">🎤</button>
-    </div>
-    <div class="mic-wrap" style="margin-top:10px;">
-        <textarea id="plan" rows="3" placeholder="Plan ve Notlar..."></textarea>
-        <button class="mic-btn" onclick="startSpeech('plan')">🎤</button>
+        <input type="text" id="besUrun" placeholder="Rejim / Ürün">
+        <button class="mic-btn" onclick="startSpeech('besUrun')">🎤</button>
     </div>
 
     <div class="btn-group">
-        <button class="btn" style="background:#28a745" onclick="kaydet()">KAYDET</button>
-        <button class="btn" style="background:#6c757d" onclick="formuTemizle()">TEMİZLE</button>
+        <button class="btn" style="background:#28a745" onclick="kaydet()">➕ KAYDET</button>
+        <button class="btn" style="background:#6c757d" onclick="formuTemizle()">🔄 TEMİZLE</button>
     </div>
 
     <div id="liste"></div>
 
     <div class="btn-group">
-        <button class="btn" style="background:#0d6efd" onclick="wordAktar()">WORD AKTAR</button>
-        <button class="btn" style="background:#dc3545" onclick="listeSil()">TÜMÜNÜ SİL</button>
+        <button class="btn" style="background:#0d6efd" onclick="wordAktar()">📄 WORD AKTAR</button>
+        <button class="btn" style="background:#dc3545" onclick="listeSil()">🗑️ SİL</button>
     </div>
 </div>
 
@@ -236,18 +202,22 @@
 
     function startSpeech(targetId) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) return alert("Bu tarayıcı desteklemiyor.");
+        if (!SpeechRecognition) return alert("Safari ayarlarından mikrofon izni verin veya Chrome kullanın.");
+        
         const recognition = new SpeechRecognition();
         recognition.lang = 'tr-TR';
+        recognition.interimResults = false;
+        
         const btn = event.currentTarget;
         btn.classList.add('active');
-        recognition.start();
+        
         recognition.onresult = (e) => {
             document.getElementById(targetId).value = e.results[0][0].transcript;
             btn.classList.remove('active');
         };
         recognition.onerror = () => btn.classList.remove('active');
-        recognition.onspeechend = () => recognition.stop();
+        recognition.onend = () => btn.classList.remove('active');
+        recognition.start();
     }
 
     document.querySelectorAll('.b-combo').forEach(el => el.addEventListener('change', function() {
@@ -263,29 +233,31 @@
     function getV(id) { return document.getElementById(id).value.trim(); }
     function setV(id, val) { document.getElementById(id).value = val || ''; }
     function getR(name) { let el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : ''; }
+    function setR(name, val) { let el = document.querySelector(`input[name="${name}"][value="${val}"]`); if(el) el.checked = true; }
     function getC(name) { return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(e => e.value); }
+    function setC(name, vals) { if(!vals) return; document.querySelectorAll(`input[name="${name}"]`).forEach(el => { if(vals.includes(el.value)) el.checked = true; }); }
 
     function kaydet() {
         let bilincler = getC('bilinc_combo');
-        if(bilincler.length === 0) bilincler = [getR('bilinc_single')];
+        if(bilincler.length === 0) {
+            let single = getR('bilinc_single');
+            if(single) bilincler = [single];
+        }
+        
         let v = {
             tarih: getV('tarih'), saat: getV('saat'), yatak: getV('yatakNo'), id: getV('hastaID'),
-            hb: getV('labHb'), wbc: getV('labWbc'), plt: getV('labPlt'), krea: getV('labKrea'), pro: getV('labPro'), alb: getV('labAlb'), digL: getV('labDiger'),
+            hb: getV('labHb'), wbc: getV('labWbc'), plt: getV('labPlt'), krea: getV('labKrea'), digL: getV('labDiger'),
             vazo: {
                 nor: { c: document.getElementById('c_nor').checked, d: getV('d_nor') },
-                dop: { c: document.getElementById('c_dop').checked, d: getV('d_dop') },
-                dob: { c: document.getElementById('c_dob').checked, d: getV('d_dob') },
-                adr: { c: document.getElementById('c_adr').checked, d: getV('d_adr') }
+                dop: { c: document.getElementById('c_dop').checked, d: getV('d_dop') }
             },
             akc: getC('akc'), sek: getV('sekresyon'), solT: getR('solTuru'), vMod: getR('vMod'),
-            bil: bilincler.filter(b => b), gks: getV('gks'), pupil: getR('pupil'), sed: getV('sedasyonInfo'),
+            bil: bilincler, gks: getV('gks'), pupil: getR('pupil'), sed: getV('sedasyonInfo'),
             bs: getR('bs'), gaita: getR('gaita'), gaiG: getV('gaitaGun'),
-            enf: getV('enfOdak'), ab1: getV('ab1'), ab1G: getV('ab1G'), ab2: getV('ab2'), ab2G: getV('ab2G'),
-            renal: getR('renal'), sivi: getV('sivi'), bes: getR('bes'), besU: getV('besUrun'), besH: getV('besHiz'),
-            anti: getV('anti'), kons: getV('kons'), plan: getV('plan')
+            renal: getR('renal'), bes: getR('bes'), besU: getV('besUrun')
         };
         hastaListesi.push(v);
-        localStorage.setItem('ybu_v23', JSON.stringify(hastaListesi));
+        localStorage.setItem('ybu_v24', JSON.stringify(hastaListesi));
         listeGuncelle();
         formuTemizle();
     }
@@ -294,16 +266,21 @@
         let l = document.getElementById('liste'); l.innerHTML = '';
         hastaListesi.forEach((h, i) => {
             l.innerHTML += `<div class="liste-item"><span>Yatak ${h.yatak} - ${h.id}</span>
-            <div><button onclick="duzenle(${i})" style="color:blue;border:none;background:none;font-weight:bold;margin-right:10px;">✎</button>
-            <button onclick="sil(${i})" style="color:red;border:none;background:none;font-weight:bold;">X</button></div></div>`;
+            <div><button onclick="duzenle(${i})" style="color:blue;border:none;background:none;font-weight:bold;margin-right:15px;font-size:1.1rem;">✎</button>
+            <button onclick="sil(${i})" style="color:red;border:none;background:none;font-weight:bold;font-size:1.1rem;">X</button></div></div>`;
         });
     }
 
     function duzenle(i) {
         let h = hastaListesi[i];
+        formuTemizle();
         setV('yatakNo', h.yatak); setV('hastaID', h.id);
         setV('labHb', h.hb); setV('labWbc', h.wbc); setV('labPlt', h.plt);
-        setV('sedasyonInfo', h.sed); setV('plan', h.plan);
+        setV('sedasyonInfo', h.sed); setR('bs', h.bs); setR('gaita', h.gaita);
+        // Bilinç Geri Yükleme
+        if(h.bil.some(b => ["Açık", "Oryante", "Koopere"].includes(b))) setC('bilinc_combo', h.bil);
+        else setR('bilinc_single', h.bil[0]);
+        setR('solTuru', h.solT);
         sil(i); window.scrollTo(0,0);
     }
 
@@ -311,32 +288,20 @@
         let doc = "<html><head><meta charset='utf-8'></head><body style='font-family:Arial; font-size:11pt;'>";
         hastaListesi.forEach(x => {
             doc += `<h3>Yatak ${x.yatak} / ${x.id} (${x.tarih} ${x.saat})</h3><p>`;
-            if(x.hb) doc += `Hb: ${x.hb}, WBC: ${parseFloat(x.wbc)*1000}, PLT: ${parseFloat(x.plt)*1000}, Krea: ${x.krea}, Prok: ${x.pro}, Alb: ${x.alb}. ${x.digL}. `;
-            let vStr = [];
-            if(x.vazo.nor.c) vStr.push(`Noradrenalin (${x.vazo.nor.d} mcg/kg/d)`);
-            if(x.vazo.dop.c) vStr.push(`Dopamin (${x.vazo.dop.d} mg/kg/d)`);
-            if(vStr.length) doc += vStr.join(', ') + " infüzyonu alıyor. ";
-            let akcSes = x.akc.length > 0 ? (x.akc.includes('Ral') ? 'Akciğerlerinde raller mevcut' : 'Akciğer sesleri ' + x.akc.join(', ')) : 'Akciğer sesleri doğal';
-            doc += akcSes + ". " + (x.sek ? x.sek + ". " : "");
+            if(x.hb) doc += `Hb: ${x.hb}, WBC: ${parseFloat(x.wbc)*1000}, PLT: ${parseFloat(x.plt)*1000}. `;
             if(x.solT === 'Spontan') doc += "Spontan solunumda. ";
             else if(x.solT === 'Nazal') doc += "Nazal oksijen desteğinde. ";
-            else if(x.solT) doc += x.solT + (x.vMod ? ' ('+x.vMod+')' : '') + " desteğinde. ";
-            doc += `Bilinç ${x.bil.join(', ')}. ${x.gks ? 'GKS: '+x.gks : ''}. ${x.sed ? x.sed + ' infüzyonu altında.' : ''} `;
-            doc += `Barsak sesleri ${x.bs === 'Normal' ? 'normal' : x.bs}. Gaita ${x.gaita} ${x.gaiG ? '('+x.gaiG+'. günü)' : ''}. `;
-            doc += (x.renal === 'Spontan' ? 'Spontan idrar çıkışı mevcut. ' : `Hasta ${x.renal} tedavisi aldı. `);
-            doc += (x.besU ? x.besU + ' ile beslenme sağlandı' : x.bes + ' besleniyor') + (x.besH ? ' ('+x.besH+' cc/saat hızında)' : '') + ". ";
-            if(x.ab1) doc += `Tedavi: ${x.ab1} (${x.ab1G}. gün). `;
-            if(x.anti) doc += x.anti + " uygulandı. ";
-            if(x.kons) doc += x.kons + " danışıldı. ";
-            doc += x.plan + " Hastanın bakımları yapılmıştır.</p><hr>";
+            else if(x.solT) doc += `${x.solT} desteğinde. `;
+            doc += `Bilinç ${x.bil.join(', ')}. Muayene: Barsak sesleri ${x.bs}. Gaita ${x.gaita}. `;
+            doc += `Beslenme: ${x.besU || x.bes}. Hastanın bakımları yapılmıştır.</p><hr>`;
         });
         let blob = new Blob([doc + "</body></html>"], {type:'application/msword'});
-        let link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "vizit_v23.doc"; link.click();
+        let link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "vizit_v24.doc"; link.click();
     }
-    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v23', JSON.stringify(hastaListesi)); listeGuncelle(); }
-    function listeSil() { if(confirm('Sil?')) { hastaListesi = []; localStorage.removeItem('ybu_v23'); listeGuncelle(); } }
+    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v24', JSON.stringify(hastaListesi)); listeGuncelle(); }
+    function listeSil() { if(confirm('Sil?')) { hastaListesi = []; localStorage.removeItem('ybu_v24'); listeGuncelle(); } }
     function formuTemizle() { 
-        document.querySelectorAll('input[type=text], input[type=number], textarea').forEach(i => i.value=''); 
+        document.querySelectorAll('input[type=text], input[type=number]').forEach(i => i.value=''); 
         document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(r => r.checked = false);
     }
 </script>
