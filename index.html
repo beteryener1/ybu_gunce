@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YBÜ İzlem Paneli v17</title>
+    <title>YBÜ İzlem Paneli v18</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
@@ -30,7 +30,7 @@
 </head>
 <body>
 <div class="panel">
-    <h1>🏥 YBÜ İZLEM PANELİ v17</h1>
+    <h1>🏥 YBÜ İZLEM PANELİ v18</h1>
 
     <div class="row grid-2">
         <input type="date" id="tarih">
@@ -142,7 +142,7 @@
         <label><input type="radio" name="bes" value="Aç"> Aç</label>
     </div>
     <div class="row grid-2" style="margin-top:5px;">
-        <input type="text" id="besUrun" placeholder="Ürün Adı">
+        <input type="text" id="besUrun" placeholder="Ürün veya Rejim">
         <div style="display:flex; align-items:center; gap:5px;"><input type="number" id="besHiz" placeholder="Doz"><span>cc/sa</span></div>
     </div>
 
@@ -165,7 +165,6 @@
 <script>
     let hastaListesi = [];
 
-    // Bilinç seçimi mantığı
     document.querySelectorAll('.b-combo').forEach(el => el.addEventListener('change', function() {
         if(this.checked) document.querySelectorAll('.b-single').forEach(s => s.checked = false);
     }));
@@ -177,7 +176,7 @@
         const now = new Date();
         document.getElementById('tarih').value = now.toISOString().split('T')[0];
         document.getElementById('saat').value = now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
-        const stored = localStorage.getItem('ybu_v17');
+        const stored = localStorage.getItem('ybu_v18');
         if (stored) { hastaListesi = JSON.parse(stored); listeGuncelle(); }
     });
 
@@ -218,7 +217,7 @@
             anti: getV('anti'), kons: getV('kons'), plan: getV('plan')
         };
         hastaListesi.push(v);
-        localStorage.setItem('ybu_v17', JSON.stringify(hastaListesi));
+        localStorage.setItem('ybu_v18', JSON.stringify(hastaListesi));
         listeGuncelle();
         formuTemizle();
     }
@@ -241,85 +240,88 @@
         formuTemizle();
         setV('tarih', h.tarih); setV('saat', h.saat); setV('yatakNo', h.yatak); setV('hastaID', h.id);
         setV('labHb', h.hb); setV('labWbc', h.wbc); setV('labPlt', h.plt); setV('labKrea', h.krea); setV('labPro', h.pro); setV('labAlb', h.alb); setV('labDiger', h.digL);
-        
         document.getElementById('c_nor').checked = h.vazo.nor.c; setV('d_nor', h.vazo.nor.d);
         document.getElementById('c_dop').checked = h.vazo.dop.c; setV('d_dop', h.vazo.dop.d);
         document.getElementById('c_dob').checked = h.vazo.dob.c; setV('d_dob', h.vazo.dob.d);
         document.getElementById('c_adr').checked = h.vazo.adr.c; setV('d_adr', h.vazo.adr.d);
-
         setC('akc', h.akc); setV('sekresyon', h.sek); setR('solTuru', h.solT); setR('vMod', h.vMod);
         if(h.solT === 'IMV') document.getElementById('imvModBox').classList.remove('hidden');
-
-        // Bilinç combo/single ayrımı
         if(h.bil.some(b => ["Açık", "Oryante", "Koopere"].includes(b))) setC('bilinc_combo', h.bil);
         else setR('bilinc_single', h.bil[0]);
-
         setV('gks', h.gks); setR('pupil', h.pupil); setV('sedasyonInfo', h.sed);
         setR('bs', h.bs); setR('gaita', h.gaita); setV('gaitaGun', h.gaiG);
         setV('enfOdak', h.enf);
-        
         setV('ab1', h.ilaçlar[0].n); setV('ab1G', h.ilaçlar[0].g);
         setV('ab2', h.ilaçlar[1].n); setV('ab2G', h.ilaçlar[1].g);
         setV('ab3', h.ilaçlar[2].n); setV('ab3G', h.ilaçlar[2].g);
         setV('afung', h.ilaçlar[3].n); setV('afungG', h.ilaçlar[3].g);
         setV('avir', h.ilaçlar[4].n); setV('avirG', h.ilaçlar[4].g);
-
         setR('renal', h.renal); setV('sivi', h.sivi); setR('bes', h.bes); setV('besUrun', h.besU); setV('besHiz', h.besH);
         setV('anti', h.anti); setV('kons', h.kons); setV('plan', h.plan);
-
-        // Düzenlenen öğeyi listeden sil (Kaydet deyince sona eklenecek)
-        sil(i);
-        window.scrollTo(0,0);
+        sil(i); window.scrollTo(0,0);
     }
 
     function wordAktar() {
-        let doc = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body>";
+        let doc = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body style='font-family:Arial; font-size:11pt;'>";
         hastaListesi.forEach(x => {
-            doc += `<h3>Hasta: Yatak ${x.yatak} / ${x.id} - ${x.tarih} ${x.saat}</h3>`;
+            let p = `<h3>Yatak ${x.yatak} / ${x.id} (${x.tarih} ${x.saat})</h3><p>`;
             
-            let labStr = "";
-            if(x.hb) labStr += `Hb: ${x.hb} g/dL, `;
-            if(x.wbc) labStr += `WBC: ${parseFloat(x.wbc)*1000} /µL, `;
-            if(x.plt) labStr += `PLT: ${parseFloat(x.plt)*1000} /µL, `;
-            if(x.krea) labStr += `Kreatinin: ${x.krea} mg/dL, `;
-            if(x.pro) labStr += `Prokalsitonin: ${x.pro} ng/mL, `;
-            if(x.alb) labStr += `Albümin: ${x.alb} g/L. `;
-            if(x.digL) labStr += x.digL;
-            if(labStr) doc += `<p><b>Laboratuvar:</b> ${labStr.replace(/, $/, "")}</p>`;
-            
+            // Lab
+            let labs = [];
+            if(x.hb) labs.push(`Hb: ${x.hb}`);
+            if(x.wbc) labs.push(`WBC: ${parseFloat(x.wbc)*1000}`);
+            if(x.plt) labs.push(`PLT: ${parseFloat(x.plt)*1000}`);
+            if(x.krea) labs.push(`Krea: ${x.krea}`);
+            if(x.pro) labs.push(`Prok: ${x.pro}`);
+            if(x.alb) labs.push(`Alb: ${x.alb}`);
+            if(labs.length || x.digL) p += labs.join(', ') + (x.digL ? '. ' + x.digL : '') + '. ';
+
+            // Vazo
             let vStr = [];
             if(x.vazo.nor.c) vStr.push(`Noradrenalin (${x.vazo.nor.d} mcg/kg/d)`);
             if(x.vazo.dop.c) vStr.push(`Dopamin (${x.vazo.dop.d} mg/kg/d)`);
             if(x.vazo.dob.c) vStr.push(`Dobutamin (${x.vazo.dob.d} mg/kg/d)`);
             if(x.vazo.adr.c) vStr.push(`Adrenalin (${x.vazo.adr.d} mcg/kg/d)`);
-            if(vStr.length) doc += `<p><b>Vazopressör Desteği:</b> ${vStr.join(', ')} infüzyonu alıyor.</p>`;
+            if(vStr.length) p += vStr.join(', ') + ' infüzyonu alıyor. ';
 
-            let akcSes = x.akc.length > 0 ? (x.akc.includes('Ral') ? 'Akciğer seslerinde ralleri var' : 'Akciğer sesleri ' + x.akc.join(', ')) : 'Akciğer sesleri doğal';
-            let solEki = x.solT === 'Spontan' ? 'solunumda' : 'desteğinde';
-            doc += `<p><b>Solunum:</b> ${akcSes}. ${x.sek ? 'Sekresyon: '+x.sek : ''}. ${x.solT || ''} ${solEki}. ${x.vMod ? 'Mod: '+x.vMod : ''}</p>`;
+            // Solunum
+            let akcSes = x.akc.length > 0 ? (x.akc.includes('Ral') ? 'Akciğerlerinde raller mevcut' : 'Akciğer sesleri ' + x.akc.join(', ')) : 'Akciğer sesleri doğal';
+            p += akcSes + '. ' + (x.sek ? x.sek + '. ' : '') + (x.solT || '') + (x.vMod ? ' ('+x.vMod+')' : '') + ' desteğinde. ';
 
+            // Nöroloji
             let bilincler = x.bil.join(', ');
-            doc += `<p><b>Nöroloji:</b> Bilinç ${bilincler}. ${x.gks ? 'GKS: '+x.gks : ''}. ${x.pup ? 'Pupiller ' + x.pup + '.' : ''} ${x.sed ? x.sed + ' infüzyonu altında.' : ''}</p>`;
-            doc += `<p><b>Muayene:</b> Barsak sesleri ${x.bs === 'Normal' ? 'normaldir' : x.bs}. Gaita ${x.gaita || ''} ${x.gaiG ? '('+x.gaiG+'. günü)' : ''}.</p>`;
-            
-            let renalStr = x.renal === 'Spontan' ? 'Spontan idrar çıkışı var.' : (x.renal ? `Hasta ${x.renal}'ye girdi.` : '');
-            doc += `<p><b>Renal & Beslenme:</b> ${renalStr} Sıvı Dengesi: ${x.sivi || ''}. ${x.bes ? x.bes + ' besleniyor.' : ''} ${x.besU ? x.besU + ' ürünü ' + x.besH + ' cc/saat hızında.' : ''}</p>`;
+            p += 'Bilinç ' + bilincler + '. ' + (x.gks ? 'GKS: '+x.gks + '. ' : '') + (x.pupil ? 'Pupiller ' + x.pupil + '. ' : '') + (x.sed ? x.sed + ' infüzyonu altında. ' : '');
 
-            let ilaçar = x.ilaçlar.filter(i => i.n).map(i => `${i.n} (${i.g}. gün)`).join(', ');
-            if(x.enf || ilaçar) doc += `<p><b>Enfeksiyon:</b> ${x.enf ? 'Odak: '+x.enf+'.' : ''} ${ilaçar ? 'Tedavi: ' + ilaçar + ' aldı.' : 'Antibiyoterapi almıyor.'}</p>`;
+            // Muayene
+            p += 'Barsak sesleri ' + (x.bs === 'Normal' ? 'normal' : x.bs) + '. Gaita ' + (x.gaita || '') + (x.gaiG ? ' ('+x.gaiG+'. günü)' : '') + '. ';
             
-            let planStr = "";
-            if(x.anti) planStr += `${x.anti} aldı. `;
-            if(x.kons) planStr += `${x.kons} istendi. `;
-            if(x.plan) planStr += `${x.plan}`;
-            doc += `<p><b>Plan:</b> ${planStr}</p>`;
-            doc += `<p><b>Hastanın bakımları yapılmıştır.</b></p><hr>`;
+            // Renal & Beslenme
+            let renalStr = x.renal === 'Spontan' ? 'Spontan idrar çıkışı mevcut' : (x.renal ? x.renal + " tedavisi uygulandı" : '');
+            p += renalStr + '. Sıvı dengesi: ' + (x.sivi || 'takipte') + '. ';
+            
+            if(x.bes) {
+                p += (x.besU ? x.besU + ' ile beslenme sağlandı' : x.bes + ' besleniyor');
+                if(x.besH) p += ' (' + x.besH + ' cc/saat hızında)';
+                p += '. ';
+            }
+
+            // Enfeksiyon
+            let ilaçar = x.ilaçlar.filter(i => i.n).map(i => `${i.n} (${i.g}. gün)`).join(', ');
+            if(x.enf || ilaçar) p += (x.enf ? 'Enfeksiyon odağı: ' + x.enf + '. ' : '') + (ilaçar ? 'Tedavi: ' + ilaçar + '. ' : '');
+            
+            // Plan
+            if(x.anti) p += x.anti + ' uygulandı. ';
+            if(x.kons) p += x.kons + ' istendi. ';
+            if(x.plan) p += x.plan;
+
+            p += ' Hastanın bakımları yapılmıştır.</p><hr>';
+            doc += p;
         });
         let blob = new Blob([doc + "</body></html>"], {type:'application/msword'});
-        let link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "vizit_v17.doc"; link.click();
+        let link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "ybu_vizit_v18.doc"; link.click();
     }
-    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v17', JSON.stringify(hastaListesi)); listeGuncelle(); }
-    function listeSil() { if(confirm('Sil?')) { hastaListesi = []; localStorage.removeItem('ybu_v17'); listeGuncelle(); } }
+    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v18', JSON.stringify(hastaListesi)); listeGuncelle(); }
+    function listeSil() { if(confirm('Tüm listeyi silmek istediğinize emin misiniz?')) { hastaListesi = []; localStorage.removeItem('ybu_v18'); listeGuncelle(); } }
     function formuTemizle() { 
         document.querySelectorAll('input[type=text], input[type=number], textarea').forEach(i => i.value=''); 
         document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(r => r.checked = false);
