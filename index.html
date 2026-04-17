@@ -2,65 +2,71 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YBÜ İzlem Paneli v22 (Sesli Giriş)</title>
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YBÜ İzlem v23</title>
     <style>
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
-        body { margin: 0; padding: 5px; background: #f0f4f8; font-size: 14px; }
+        body { margin: 0; padding: 10px; background: #f0f4f8; font-size: 15px; }
         
-        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1e466e; display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .login-box { background: white; padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 90%; max-width: 320px; }
-        .login-box h2 { color: #1e466e; margin-bottom: 20px; font-size: 1.2rem; }
-        .login-box input { width: 100%; text-align: center; font-size: 24px; letter-spacing: 10px; margin-bottom: 15px; padding: 10px; border: 2px solid #ccc; border-radius: 8px; }
+        /* Şifre Ekranı */
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1e466e; display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        .login-box { background: white; padding: 25px; border-radius: 15px; text-align: center; width: 85%; }
         
-        .panel { display: none; background: white; border-radius: 10px; padding: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
-        h1 { font-size: 1.1rem; text-align: center; margin: 0 0 10px; color: #1e466e; }
-        h3 { font-size: 0.8rem; margin: 10px 0 5px; padding: 4px; background: #e9ecef; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
-        .row { display: grid; gap: 8px; margin-bottom: 8px; }
-        .grid-2 { grid-template-columns: 1fr 1fr; }
-        .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .panel { display: none; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 100%; }
+        h3 { font-size: 0.85rem; margin: 15px 0 8px; padding: 6px; background: #e9ecef; border-radius: 5px; font-weight: bold; text-transform: uppercase; color: #495057; }
         
-        /* Sesli Giriş Tasarımı */
-        .input-with-mic { position: relative; display: flex; align-items: center; }
-        .mic-btn { position: absolute; right: 5px; background: none; border: none; cursor: pointer; font-size: 18px; padding: 5px; color: #6c757d; }
-        .mic-btn.active { color: #dc3545; animation: pulse 1s infinite; }
+        .row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; background: #fff; -webkit-appearance: none; }
+        
+        /* Sesli Giriş Buton Tasarımı */
+        .mic-wrap { display: flex; gap: 5px; align-items: center; width: 100%; }
+        .mic-btn { background: #f8f9fa; border: 1px solid #ccc; border-radius: 8px; padding: 10px; font-size: 1.2rem; cursor: pointer; flex-shrink: 0; }
+        .mic-btn.active { background: #ffcccc; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; padding-right: 35px; }
-        .check-group { display: flex; flex-wrap: wrap; gap: 6px; background: #f8f9fa; padding: 8px; border-radius: 5px; border: 1px solid #dee2e6; }
-        .check-group label { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 500; }
-        input[type="checkbox"], input[type="radio"] { width: 17px; height: 17px; margin: 0; }
-        .vazo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-        .vazo-box { background: #fff; border: 1px solid #eee; padding: 5px; border-radius: 5px; display: flex; flex-direction: column; align-items: center; }
-        .vazo-box input { width: 55px; height: 25px; font-size: 12px; padding: 2px; text-align: center; padding-right: 2px; }
-        .vazo-box span { font-size: 9px; color: #777; font-weight: bold; }
+        .check-group { display: flex; flex-wrap: wrap; gap: 8px; background: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px solid #dee2e6; }
+        .check-group label { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 500; min-width: 30%; }
+        input[type="checkbox"], input[type="radio"] { width: 22px; height: 22px; margin: 0; flex-shrink: 0; }
+
+        .vazo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .vazo-box { background: #fff; border: 1px solid #dee2e6; padding: 8px; border-radius: 8px; text-align: center; }
+        .vazo-box input { width: 100%; text-align: center; margin-top: 5px; padding: 8px; }
+        .vazo-box span { font-size: 10px; color: #777; font-weight: bold; }
+
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .btn { padding: 15px; border: none; border-radius: 25px; color: white; font-weight: bold; font-size: 15px; cursor: pointer; text-align: center; }
         .hidden { display: none; }
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
-        .btn { padding: 12px; border: none; border-radius: 20px; color: white; font-weight: bold; font-size: 14px; cursor: pointer; }
-        .edit-btn { color: #0d6efd; margin-right: 15px; font-weight: bold; cursor: pointer; border:none; background:none; }
+        
+        #liste { margin-top: 15px; border-top: 1px solid #eee; }
+        .liste-item { padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay">
     <div class="login-box">
-        <h2>🔒 Yetkili Girişi</h2>
-        <input type="password" id="entryCode" placeholder="••••" maxlength="4" inputmode="numeric">
-        <button class="btn" style="background:#28a745; width:100%;" onclick="checkAccess()">GİRİŞ YAP</button>
+        <h2>🔒 Giriş Kodu</h2>
+        <input type="password" id="entryCode" placeholder="••••" maxlength="4" inputmode="numeric" style="letter-spacing: 10px; font-size: 24px;">
+        <button class="btn" style="background:#28a745; width:100%; margin-top:15px;" onclick="checkAccess()">GİRİŞ</button>
     </div>
 </div>
 
 <div class="panel" id="mainPanel">
-    <h1>🏥 YBÜ İZLEM PANELİ v22</h1>
+    <h1>🏥 YBÜ İZLEM v23</h1>
 
-    <div class="row grid-2">
-        <input type="date" id="tarih">
-        <input type="time" id="saat">
-        <input type="number" id="yatakNo" placeholder="Yatak No">
-        <div class="input-with-mic">
-            <input type="text" id="hastaID" placeholder="Hasta ID / İsim">
-            <button class="mic-btn" onclick="startSpeech('hastaID')">🎤</button>
+    <div class="row">
+        <div class="grid-2">
+            <input type="date" id="tarih">
+            <input type="time" id="saat">
+        </div>
+        <div class="grid-2">
+            <input type="number" id="yatakNo" placeholder="Yatak No">
+            <div class="mic-wrap">
+                <input type="text" id="hastaID" placeholder="Hasta ID">
+                <button class="mic-btn" onclick="startSpeech('hastaID')">🎤</button>
+            </div>
         </div>
     </div>
 
@@ -73,13 +79,15 @@
         <label><input type="radio" name="bilinc_single" value="Somnolans" class="b-single"> Somn.</label>
         <label><input type="radio" name="bilinc_single" value="Stupor" class="b-single"> Stupor</label>
         <label><input type="radio" name="bilinc_single" value="Koma" class="b-single"> Koma</label>
-        <input type="number" id="gks" placeholder="GKS" style="width:50px; margin-left:5px;">
     </div>
-    <div class="input-with-mic" style="margin-top:5px;">
-        <input type="text" id="sedasyonInfo" placeholder="Sedasyon ve Dozu">
-        <button class="mic-btn" onclick="startSpeech('sedasyonInfo')">🎤</button>
+    <div class="row" style="margin-top:10px;">
+        <input type="number" id="gks" placeholder="GKS Skoru">
+        <div class="mic-wrap">
+            <input type="text" id="sedasyonInfo" placeholder="Sedasyon ve Dozu">
+            <button class="mic-btn" onclick="startSpeech('sedasyonInfo')">🎤</button>
+        </div>
     </div>
-    <div class="check-group" style="margin-top:5px;">
+    <div class="check-group">
         <label>Pupiller:</label>
         <label><input type="radio" name="pupil" value="İzokorik"> İzo</label>
         <label><input type="radio" name="pupil" value="Anizokorik"> Ani</label>
@@ -88,17 +96,23 @@
     </div>
 
     <h3>🔬 Laboratuvar</h3>
-    <div class="row grid-3">
-        <input type="number" step="0.1" id="labHb" placeholder="Hb">
-        <input type="number" step="0.1" id="labWbc" placeholder="WBC (x1000)" max="999">
-        <input type="number" step="0.1" id="labPlt" placeholder="PLT (x1000)" max="999">
-        <input type="number" step="0.01" id="labKrea" placeholder="Krea">
-        <input type="number" step="0.01" id="labPro" placeholder="Prokal">
-        <input type="number" step="0.1" id="labAlb" placeholder="Alb (g/L)">
-    </div>
-    <div class="input-with-mic" style="margin-top:5px;">
-        <input type="text" id="labDiger" placeholder="Diğer lab bulguları">
-        <button class="mic-btn" onclick="startSpeech('labDiger')">🎤</button>
+    <div class="row">
+        <div class="grid-2">
+            <input type="number" step="0.1" id="labHb" placeholder="Hb">
+            <input type="number" step="0.1" id="labWbc" placeholder="WBC (x1000)" max="999">
+        </div>
+        <div class="grid-2">
+            <input type="number" step="0.1" id="labPlt" placeholder="PLT (x1000)" max="999">
+            <input type="number" step="0.01" id="labKrea" placeholder="Kreatinin">
+        </div>
+        <div class="grid-2">
+            <input type="number" step="0.01" id="labPro" placeholder="Prokal">
+            <input type="number" step="0.1" id="labAlb" placeholder="Alb (g/L)">
+        </div>
+        <div class="mic-wrap">
+            <input type="text" id="labDiger" placeholder="Diğer lab bulguları">
+            <button class="mic-btn" onclick="startSpeech('labDiger')">🎤</button>
+        </div>
     </div>
 
     <h3>💉 Vazopressörler</h3>
@@ -116,87 +130,80 @@
         <label><input type="checkbox" name="akc" value="Ronküs"> Ronküs</label>
         <label><input type="checkbox" name="akc" value="Azalmış"> Azalmış</label>
     </div>
-    <div class="input-with-mic" style="margin-top:5px;">
+    <div class="mic-wrap" style="margin-top:10px;">
         <input type="text" id="sekresyon" placeholder="Sekresyon detayı">
         <button class="mic-btn" onclick="startSpeech('sekresyon')">🎤</button>
     </div>
-    <div class="check-group" style="margin-top:5px;">
+    <div class="check-group" style="margin-top:10px;">
         <label><input type="radio" name="solTuru" value="Spontan"> Spontan</label>
         <label><input type="radio" name="solTuru" value="Nazal"> Nazal</label>
         <label><input type="radio" name="solTuru" value="HFNO"> HFNO</label>
         <label><input type="radio" name="solTuru" value="CPAP"> CPAP</label>
         <label><input type="radio" name="solTuru" value="IMV" id="imvCheck"> IMV</label>
     </div>
-    <div id="imvModBox" class="hidden check-group" style="background:#fff3cd; margin-top:5px;">
+    <div id="imvModBox" class="hidden check-group" style="background:#fff3cd; margin-top:10px;">
         <label><input type="radio" name="vMod" value="AC/PRVC"> AC/PRVC</label>
         <label><input type="radio" name="vMod" value="PSV"> PSV</label>
         <label><input type="radio" name="vMod" value="SIMV"> SIMV</label>
         <label><input type="radio" name="vMod" value="CPAP"> CPAP</label>
     </div>
 
-    <h3>腹 Abdomen & Barsak Sesleri</h3>
+    <h3>腹 Abdomen & Renal & Beslenme</h3>
     <div class="check-group">
         <label>Barsak:</label>
-        <label><input type="radio" name="bs" value="Normal"> Normal</label>
-        <label><input type="radio" name="bs" value="Hiperaktif"> Hiper.</label>
-        <label><input type="radio" name="bs" value="Hipoaktif"> Hipo.</label>
+        <label><input type="radio" name="bs" value="Normal"> N</label>
+        <label><input type="radio" name="bs" value="Hiperaktif"> Hiper</label>
+        <label><input type="radio" name="bs" value="Hipoaktif"> Hipo</label>
         <label><input type="radio" name="bs" value="Yok"> Yok</label>
     </div>
-    <div class="check-group" style="margin-top:5px;">
+    <div class="check-group" style="margin-top:10px;">
         <label>Gaita:</label>
-        <label><input type="radio" name="gaita" value="Normal"> Normal</label>
+        <label><input type="radio" name="gaita" value="Normal"> N</label>
         <label><input type="radio" name="gaita" value="Diyare"> Diyare</label>
         <label><input type="radio" name="gaita" value="Melena"> Melena</label>
         <label><input type="radio" name="gaita" value="Yok"> Yok</label>
-        <input type="number" id="gaitaGun" placeholder="Gün" style="width:40px; padding-right:8px;">
+        <input type="number" id="gaitaGun" placeholder="Gün" style="width:60px;">
     </div>
-
-    <h3>🦠 Enfeksiyon & Renal</h3>
-    <div class="input-with-mic">
-        <input type="text" id="enfOdak" placeholder="Enfeksiyon Odağı">
-        <button class="mic-btn" onclick="startSpeech('enfOdak')">🎤</button>
-    </div>
-    <div class="row grid-2" style="margin-top:5px;">
-        <input type="text" id="ab1" placeholder="AB 1"><input type="number" id="ab1G" placeholder="G">
-        <input type="text" id="ab2" placeholder="AB 2"><input type="number" id="ab2G" placeholder="G">
-        <input type="text" id="ab3" placeholder="AB 3"><input type="number" id="ab3G" placeholder="G">
-        <input type="text" id="afung" placeholder="Antifung."><input type="number" id="afungG" placeholder="G">
-        <input type="text" id="avir" placeholder="Antivir."><input type="number" id="avirG" placeholder="G">
-    </div>
-    <div class="check-group" style="margin-top:5px;">
+    <div class="check-group" style="margin-top:10px;">
         <label>Renal:</label>
         <label><input type="radio" name="renal" value="Spontan"> Spon</label>
         <label><input type="radio" name="renal" value="HD"> HD</label>
         <label><input type="radio" name="renal" value="CRRT"> CRRT</label>
     </div>
-    <input type="text" id="sivi" placeholder="Aldığı/Çıkardığı" style="margin-top:5px;">
-
-    <h3>🍎 Beslenme</h3>
-    <div class="check-group">
-        <label><input type="radio" name="bes" value="Oral"> Oral</label>
-        <label><input type="radio" name="bes" value="Enteral"> Ent</label>
-        <label><input type="radio" name="bes" value="TPN"> TPN</label>
-        <label><input type="radio" name="bes" value="Aç"> Aç</label>
+    <div class="grid-2" style="margin-top:10px;">
+        <input type="text" id="sivi" placeholder="Aldığı/Çıkardığı">
+        <div class="check-group"><label><input type="radio" name="bes" value="Oral"> Oral</label><label><input type="radio" name="bes" value="Ent"> Ent</label></div>
     </div>
-    <div class="row grid-2" style="margin-top:5px;">
-        <div class="input-with-mic">
-            <input type="text" id="besUrun" placeholder="Ürün veya Rejim">
+    <div class="row" style="margin-top:10px;">
+        <div class="mic-wrap">
+            <input type="text" id="besUrun" placeholder="Beslenme Ürünü/Rejim">
             <button class="mic-btn" onclick="startSpeech('besUrun')">🎤</button>
         </div>
-        <div style="display:flex; align-items:center; gap:5px;"><input type="number" id="besHiz" placeholder="Doz"><span>cc/sa</span></div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <input type="number" id="besHiz" placeholder="Doz">
+            <span style="white-space:nowrap; font-size:12px;">cc/saat</span>
+        </div>
     </div>
 
-    <h3>📋 Plan</h3>
-    <div class="input-with-mic">
+    <h3>💊 Enfeksiyon & Plan</h3>
+    <div class="mic-wrap">
+        <input type="text" id="enfOdak" placeholder="Enfeksiyon Odağı">
+        <button class="mic-btn" onclick="startSpeech('enfOdak')">🎤</button>
+    </div>
+    <div class="grid-2" style="margin-top:10px;">
+        <input type="text" id="ab1" placeholder="AB 1"><input type="number" id="ab1G" placeholder="G">
+        <input type="text" id="ab2" placeholder="AB 2"><input type="number" id="ab2G" placeholder="G">
+    </div>
+    <div class="mic-wrap" style="margin-top:10px;">
         <input type="text" id="anti" placeholder="Antikoagülasyon">
         <button class="mic-btn" onclick="startSpeech('anti')">🎤</button>
     </div>
-    <div class="input-with-mic" style="margin-top:5px;">
+    <div class="mic-wrap" style="margin-top:10px;">
         <input type="text" id="kons" placeholder="Konsültasyonlar">
         <button class="mic-btn" onclick="startSpeech('kons')">🎤</button>
     </div>
-    <div class="input-with-mic" style="margin-top:5px;">
-        <textarea id="plan" rows="2" placeholder="Notlar..."></textarea>
+    <div class="mic-wrap" style="margin-top:10px;">
+        <textarea id="plan" rows="3" placeholder="Plan ve Notlar..."></textarea>
         <button class="mic-btn" onclick="startSpeech('plan')">🎤</button>
     </div>
 
@@ -204,10 +211,12 @@
         <button class="btn" style="background:#28a745" onclick="kaydet()">KAYDET</button>
         <button class="btn" style="background:#6c757d" onclick="formuTemizle()">TEMİZLE</button>
     </div>
-    <div id="liste" style="margin-top:10px;"></div>
+
+    <div id="liste"></div>
+
     <div class="btn-group">
         <button class="btn" style="background:#0d6efd" onclick="wordAktar()">WORD AKTAR</button>
-        <button class="btn" style="background:#dc3545" onclick="listeSil()">SİL</button>
+        <button class="btn" style="background:#dc3545" onclick="listeSil()">TÜMÜNÜ SİL</button>
     </div>
 </div>
 
@@ -215,50 +224,30 @@
     let dogruSifre = "1234"; 
     let hastaListesi = [];
 
-    // SES TANIMA FONKSİYONU
-    function startSpeech(targetId) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            alert("Maalesef tarayıcınız ses tanıma özelliğini desteklemiyor. Chrome veya Safari kullanmayı deneyin.");
-            return;
-        }
-
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'tr-TR';
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-
-        const btn = event.currentTarget;
-        btn.classList.add('active');
-
-        recognition.start();
-
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            document.getElementById(targetId).value = transcript;
-            btn.classList.remove('active');
-        };
-
-        recognition.onerror = (event) => {
-            alert("Ses tanıma hatası: " + event.error);
-            btn.classList.remove('active');
-        };
-
-        recognition.onspeechend = () => {
-            recognition.stop();
-            btn.classList.remove('active');
-        };
-    }
-
     function checkAccess() {
-        let input = document.getElementById('entryCode').value;
-        if(input === dogruSifre) {
+        if(document.getElementById('entryCode').value === dogruSifre) {
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('mainPanel').style.display = 'block';
         } else {
-            alert("Hatalı Giriş Kodu!");
+            alert("Kod hatalı!");
             document.getElementById('entryCode').value = '';
         }
+    }
+
+    function startSpeech(targetId) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) return alert("Bu tarayıcı desteklemiyor.");
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'tr-TR';
+        const btn = event.currentTarget;
+        btn.classList.add('active');
+        recognition.start();
+        recognition.onresult = (e) => {
+            document.getElementById(targetId).value = e.results[0][0].transcript;
+            btn.classList.remove('active');
+        };
+        recognition.onerror = () => btn.classList.remove('active');
+        recognition.onspeechend = () => recognition.stop();
     }
 
     document.querySelectorAll('.b-combo').forEach(el => el.addEventListener('change', function() {
@@ -267,15 +256,6 @@
     document.querySelectorAll('.b-single').forEach(el => el.addEventListener('change', function() {
         if(this.checked) document.querySelectorAll('.b-combo').forEach(c => c.checked = false);
     }));
-
-    window.addEventListener('DOMContentLoaded', () => {
-        const now = new Date();
-        document.getElementById('tarih').value = now.toISOString().split('T')[0];
-        document.getElementById('saat').value = now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
-        const stored = localStorage.getItem('ybu_v22');
-        if (stored) { hastaListesi = JSON.parse(stored); listeGuncelle(); }
-    });
-
     document.getElementById('imvCheck').addEventListener('change', function() {
         document.getElementById('imvModBox').classList.toggle('hidden', !this.checked);
     });
@@ -283,14 +263,11 @@
     function getV(id) { return document.getElementById(id).value.trim(); }
     function setV(id, val) { document.getElementById(id).value = val || ''; }
     function getR(name) { let el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : ''; }
-    function setR(name, val) { let el = document.querySelector(`input[name="${name}"][value="${val}"]`); if(el) el.checked = true; }
     function getC(name) { return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(e => e.value); }
-    function setC(name, vals) { if(!vals) return; document.querySelectorAll(`input[name="${name}"]`).forEach(el => { if(vals.includes(el.value)) el.checked = true; }); }
 
     function kaydet() {
         let bilincler = getC('bilinc_combo');
         if(bilincler.length === 0) bilincler = [getR('bilinc_single')];
-        
         let v = {
             tarih: getV('tarih'), saat: getV('saat'), yatak: getV('yatakNo'), id: getV('hastaID'),
             hb: getV('labHb'), wbc: getV('labWbc'), plt: getV('labPlt'), krea: getV('labKrea'), pro: getV('labPro'), alb: getV('labAlb'), digL: getV('labDiger'),
@@ -303,17 +280,12 @@
             akc: getC('akc'), sek: getV('sekresyon'), solT: getR('solTuru'), vMod: getR('vMod'),
             bil: bilincler.filter(b => b), gks: getV('gks'), pupil: getR('pupil'), sed: getV('sedasyonInfo'),
             bs: getR('bs'), gaita: getR('gaita'), gaiG: getV('gaitaGun'),
-            enf: getV('enfOdak'), 
-            ilaçlar: [
-                {n: getV('ab1'), g: getV('ab1G')}, {n: getV('ab2'), g: getV('ab2G')}, {n: getV('ab3'), g: getV('ab3G')},
-                {n: getV('afung'), g: getV('afungG')}, {n: getV('avir'), g: getV('avirG')}
-            ],
-            renal: getR('renal'), sivi: getV('sivi'), 
-            bes: getR('bes'), besU: getV('besUrun'), besH: getV('besHiz'),
+            enf: getV('enfOdak'), ab1: getV('ab1'), ab1G: getV('ab1G'), ab2: getV('ab2'), ab2G: getV('ab2G'),
+            renal: getR('renal'), sivi: getV('sivi'), bes: getR('bes'), besU: getV('besUrun'), besH: getV('besHiz'),
             anti: getV('anti'), kons: getV('kons'), plan: getV('plan')
         };
         hastaListesi.push(v);
-        localStorage.setItem('ybu_v22', JSON.stringify(hastaListesi));
+        localStorage.setItem('ybu_v23', JSON.stringify(hastaListesi));
         listeGuncelle();
         formuTemizle();
     }
@@ -321,106 +293,51 @@
     function listeGuncelle() {
         let l = document.getElementById('liste'); l.innerHTML = '';
         hastaListesi.forEach((h, i) => {
-            l.innerHTML += `<div style="padding:8px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center;">
-                <span>Yatak ${h.yatak} - ${h.id}</span>
-                <div>
-                    <button class="edit-btn" onclick="duzenle(${i})">✎ DÜZELT</button>
-                    <button onclick="sil(${i})" style="color:red; border:none; background:none; font-weight:bold;">X</button>
-                </div>
-            </div>`;
+            l.innerHTML += `<div class="liste-item"><span>Yatak ${h.yatak} - ${h.id}</span>
+            <div><button onclick="duzenle(${i})" style="color:blue;border:none;background:none;font-weight:bold;margin-right:10px;">✎</button>
+            <button onclick="sil(${i})" style="color:red;border:none;background:none;font-weight:bold;">X</button></div></div>`;
         });
     }
 
     function duzenle(i) {
         let h = hastaListesi[i];
-        formuTemizle();
-        setV('tarih', h.tarih); setV('saat', h.saat); setV('yatakNo', h.yatak); setV('hastaID', h.id);
-        setV('labHb', h.hb); setV('labWbc', h.wbc); setV('labPlt', h.plt); setV('labKrea', h.krea); setV('labPro', h.pro); setV('labAlb', h.alb); setV('labDiger', h.digL);
-        document.getElementById('c_nor').checked = h.vazo.nor.c; setV('d_nor', h.vazo.nor.d);
-        document.getElementById('c_dop').checked = h.vazo.dop.c; setV('d_dop', h.vazo.dop.d);
-        document.getElementById('c_dob').checked = h.vazo.dob.c; setV('d_dob', h.vazo.dob.d);
-        document.getElementById('c_adr').checked = h.vazo.adr.c; setV('d_adr', h.vazo.adr.d);
-        setC('akc', h.akc); setV('sekresyon', h.sek); setR('solTuru', h.solT); setR('vMod', h.vMod);
-        if(h.solT === 'IMV') document.getElementById('imvModBox').classList.remove('hidden');
-        if(h.bil.some(b => ["Açık", "Oryante", "Koopere"].includes(b))) setC('bilinc_combo', h.bil);
-        else setR('bilinc_single', h.bil[0]);
-        setV('gks', h.gks); setR('pupil', h.pupil); setV('sedasyonInfo', h.sed);
-        setR('bs', h.bs); setR('gaita', h.gaita); setV('gaitaGun', h.gaiG);
-        setV('enfOdak', h.enf);
-        setV('ab1', h.ilaçlar[0].n); setV('ab1G', h.ilaçlar[0].g);
-        setV('ab2', h.ilaçlar[1].n); setV('ab2G', h.ilaçlar[1].g);
-        setV('ab3', h.ilaçlar[2].n); setV('ab3G', h.ilaçlar[2].g);
-        setV('afung', h.ilaçlar[3].n); setV('afungG', h.ilaçlar[3].g);
-        setV('avir', h.ilaçlar[4].n); setV('avirG', h.ilaçlar[4].g);
-        setR('renal', h.renal); setV('sivi', h.sivi); setR('bes', h.bes); setV('besUrun', h.besU); setV('besHiz', h.besH);
-        setV('anti', h.anti); setV('kons', h.kons); setV('plan', h.plan);
+        setV('yatakNo', h.yatak); setV('hastaID', h.id);
+        setV('labHb', h.hb); setV('labWbc', h.wbc); setV('labPlt', h.plt);
+        setV('sedasyonInfo', h.sed); setV('plan', h.plan);
         sil(i); window.scrollTo(0,0);
     }
 
     function wordAktar() {
-        let doc = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body style='font-family:Arial; font-size:11pt;'>";
+        let doc = "<html><head><meta charset='utf-8'></head><body style='font-family:Arial; font-size:11pt;'>";
         hastaListesi.forEach(x => {
-            let p = `<h3>Yatak ${x.yatak} / ${x.id} (${x.tarih} ${x.saat})</h3><p>`;
-            
-            let labs = [];
-            if(x.hb) labs.push(`Hb: ${x.hb}`);
-            if(x.wbc) labs.push(`WBC: ${parseFloat(x.wbc)*1000}`);
-            if(x.plt) labs.push(`PLT: ${parseFloat(x.plt)*1000}`);
-            if(x.krea) labs.push(`Krea: ${x.krea}`);
-            if(x.pro) labs.push(`Prok: ${x.pro}`);
-            if(x.alb) labs.push(`Alb: ${x.alb}`);
-            if(labs.length || x.digL) p += labs.join(', ') + (x.digL ? '. ' + x.digL : '') + '. ';
-
+            doc += `<h3>Yatak ${x.yatak} / ${x.id} (${x.tarih} ${x.saat})</h3><p>`;
+            if(x.hb) doc += `Hb: ${x.hb}, WBC: ${parseFloat(x.wbc)*1000}, PLT: ${parseFloat(x.plt)*1000}, Krea: ${x.krea}, Prok: ${x.pro}, Alb: ${x.alb}. ${x.digL}. `;
             let vStr = [];
             if(x.vazo.nor.c) vStr.push(`Noradrenalin (${x.vazo.nor.d} mcg/kg/d)`);
             if(x.vazo.dop.c) vStr.push(`Dopamin (${x.vazo.dop.d} mg/kg/d)`);
-            if(x.vazo.dob.c) vStr.push(`Dobutamin (${x.vazo.dob.d} mg/kg/d)`);
-            if(x.vazo.adr.c) vStr.push(`Adrenalin (${x.vazo.adr.d} mcg/kg/d)`);
-            if(vStr.length) p += vStr.join(', ') + ' infüzyonu alıyor. ';
-
+            if(vStr.length) doc += vStr.join(', ') + " infüzyonu alıyor. ";
             let akcSes = x.akc.length > 0 ? (x.akc.includes('Ral') ? 'Akciğerlerinde raller mevcut' : 'Akciğer sesleri ' + x.akc.join(', ')) : 'Akciğer sesleri doğal';
-            p += akcSes + '. ' + (x.sek ? x.sek + '. ' : '');
-            
-            if(x.solT === 'Spontan') {
-                p += 'Spontan solunumda. ';
-            } else if(x.solT === 'Nazal') {
-                p += 'Nazal oksijen desteğinde. ';
-            } else if(x.solT) {
-                p += x.solT + (x.vMod ? ' ('+x.vMod+')' : '') + ' desteğinde. ';
-            }
-
-            let bilincler = x.bil.join(', ');
-            p += 'Bilinç ' + bilincler + '. ' + (x.gks ? 'GKS: '+x.gks + '. ' : '') + (x.pupil ? 'Pupiller ' + x.pupil + '. ' : '') + (x.sed ? x.sed + ' infüzyonu altında. ' : '');
-            p += 'Barsak sesleri ' + (x.bs === 'Normal' ? 'normal' : x.bs) + '. Gaita ' + (x.gaita || '') + (x.gaiG ? ' ('+x.gaiG+'. günü)' : '') + '. ';
-            
-            let renalStr = x.renal === 'Spontan' ? 'Spontan idrar çıkışı mevcut' : (x.renal ? x.renal + " tedavisi uygulandı" : '');
-            p += renalStr + '. Sıvı dengesi: ' + (x.sivi || 'takipte') + '. ';
-            
-            if(x.bes) {
-                p += (x.besU ? x.besU + ' ile beslenme sağlandı' : x.bes + ' besleniyor');
-                if(x.besH) p += ' (' + x.besH + ' cc/saat hızında)';
-                p += '. ';
-            }
-
-            let ilaçar = x.ilaçlar.filter(i => i.n).map(i => `${i.n} (${i.g}. gün)`).join(', ');
-            if(x.enf || ilaçar) p += (x.enf ? 'Enfeksiyon odağı: ' + x.enf + '. ' : '') + (ilaçar ? 'Tedavi: ' + ilaçar + '. ' : '');
-            
-            if(x.anti) p += x.anti + ' uygulandı. ';
-            if(x.kons) p += x.kons + ' danışıldı. ';
-            if(x.plan) p += x.plan;
-
-            p += ' Hastanın bakımları yapılmıştır.</p><hr>';
-            doc += p;
+            doc += akcSes + ". " + (x.sek ? x.sek + ". " : "");
+            if(x.solT === 'Spontan') doc += "Spontan solunumda. ";
+            else if(x.solT === 'Nazal') doc += "Nazal oksijen desteğinde. ";
+            else if(x.solT) doc += x.solT + (x.vMod ? ' ('+x.vMod+')' : '') + " desteğinde. ";
+            doc += `Bilinç ${x.bil.join(', ')}. ${x.gks ? 'GKS: '+x.gks : ''}. ${x.sed ? x.sed + ' infüzyonu altında.' : ''} `;
+            doc += `Barsak sesleri ${x.bs === 'Normal' ? 'normal' : x.bs}. Gaita ${x.gaita} ${x.gaiG ? '('+x.gaiG+'. günü)' : ''}. `;
+            doc += (x.renal === 'Spontan' ? 'Spontan idrar çıkışı mevcut. ' : `Hasta ${x.renal} tedavisi aldı. `);
+            doc += (x.besU ? x.besU + ' ile beslenme sağlandı' : x.bes + ' besleniyor') + (x.besH ? ' ('+x.besH+' cc/saat hızında)' : '') + ". ";
+            if(x.ab1) doc += `Tedavi: ${x.ab1} (${x.ab1G}. gün). `;
+            if(x.anti) doc += x.anti + " uygulandı. ";
+            if(x.kons) doc += x.kons + " danışıldı. ";
+            doc += x.plan + " Hastanın bakımları yapılmıştır.</p><hr>";
         });
         let blob = new Blob([doc + "</body></html>"], {type:'application/msword'});
-        let link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "ybu_vizit_v22.doc"; link.click();
+        let link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "vizit_v23.doc"; link.click();
     }
-    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v22', JSON.stringify(hastaListesi)); listeGuncelle(); }
-    function listeSil() { if(confirm('Tüm listeyi silmek istediğinize emin misiniz?')) { hastaListesi = []; localStorage.removeItem('ybu_v22'); listeGuncelle(); } }
+    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v23', JSON.stringify(hastaListesi)); listeGuncelle(); }
+    function listeSil() { if(confirm('Sil?')) { hastaListesi = []; localStorage.removeItem('ybu_v23'); listeGuncelle(); } }
     function formuTemizle() { 
         document.querySelectorAll('input[type=text], input[type=number], textarea').forEach(i => i.value=''); 
         document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(r => r.checked = false);
-        document.getElementById('imvModBox').classList.add('hidden');
     }
 </script>
 </body>
