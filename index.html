@@ -3,18 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YBÜ İzlem Paneli v21</title>
+    <title>YBÜ İzlem Paneli v22</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
         body { margin: 0; padding: 5px; background: #f0f4f8; font-size: 14px; }
-        
-        /* Şifre Ekranı Tasarımı */
-        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1e466e; display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .login-box { background: white; padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .login-box input { width: 120px; text-align: center; font-size: 24px; letter-spacing: 5px; margin-bottom: 15px; padding: 10px; border: 2px solid #ccc; border-radius: 8px; display: block; margin-left: auto; margin-right: auto; }
-        
-        .panel { display: none; background: white; border-radius: 10px; padding: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
+        .panel { background: white; border-radius: 10px; padding: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
         h1 { font-size: 1.1rem; text-align: center; margin: 0 0 10px; color: #1e466e; }
         h3 { font-size: 0.8rem; margin: 10px 0 5px; padding: 4px; background: #e9ecef; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
         .row { display: grid; gap: 8px; margin-bottom: 8px; }
@@ -35,17 +29,8 @@
     </style>
 </head>
 <body>
-
-<div id="loginOverlay">
-    <div class="login-box">
-        <h2 style="color: #1e466e; margin-bottom: 15px;">🔒 Giriş Gerekli</h2>
-        <input type="password" id="passCode" maxlength="4" inputmode="numeric" placeholder="****">
-        <button class="btn" style="background:#28a745; width: 100%;" onclick="girisYap()">GİRİŞ</button>
-    </div>
-</div>
-
-<div class="panel" id="mainPanel">
-    <h1>🏥 YBÜ İZLEM PANELİ v21</h1>
+<div class="panel">
+    <h1>🏥 YBÜ İZLEM PANELİ v22</h1>
 
     <div class="row grid-2">
         <input type="date" id="tarih">
@@ -147,4 +132,204 @@
         <label><input type="radio" name="renal" value="HD"> HD</label>
         <label><input type="radio" name="renal" value="CRRT"> CRRT</label>
     </div>
-    <input type="text"
+    <input type="text" id="sivi" placeholder="Aldığı/Çıkardığı" style="margin-top:5px;">
+
+    <h3>🍎 Beslenme</h3>
+    <div class="check-group">
+        <label><input type="radio" name="bes" value="Oral"> Oral</label>
+        <label><input type="radio" name="bes" value="Enteral"> Ent</label>
+        <label><input type="radio" name="bes" value="TPN"> TPN</label>
+        <label><input type="radio" name="bes" value="Aç"> Aç</label>
+    </div>
+    <div class="row grid-2" style="margin-top:5px;">
+        <input type="text" id="besUrun" placeholder="Ürün veya Rejim">
+        <div style="display:flex; align-items:center; gap:5px;"><input type="number" id="besHiz" placeholder="Doz"><span>cc/sa</span></div>
+    </div>
+
+    <h3>📋 Plan</h3>
+    <input type="text" id="anti" placeholder="Antikoagülasyon">
+    <input type="text" id="kons" placeholder="Konsültasyonlar">
+    <textarea id="plan" rows="2" placeholder="Notlar..."></textarea>
+
+    <div class="btn-group">
+        <button class="btn" style="background:#28a745" onclick="kaydet()">KAYDET</button>
+        <button class="btn" style="background:#6c757d" onclick="formuTemizle()">TEMİZLE</button>
+    </div>
+    <div id="liste" style="margin-top:10px;"></div>
+    <div class="btn-group">
+        <button class="btn" style="background:#0d6efd" onclick="wordAktar()">WORD AKTAR</button>
+        <button class="btn" style="background:#dc3545" onclick="listeSil()">SİL</button>
+    </div>
+</div>
+
+<script>
+    let hastaListesi = [];
+
+    document.querySelectorAll('.b-combo').forEach(el => el.addEventListener('change', function() {
+        if(this.checked) document.querySelectorAll('.b-single').forEach(s => s.checked = false);
+    }));
+    document.querySelectorAll('.b-single').forEach(el => el.addEventListener('change', function() {
+        if(this.checked) document.querySelectorAll('.b-combo').forEach(c => c.checked = false);
+    }));
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const now = new Date();
+        document.getElementById('tarih').value = now.toISOString().split('T')[0];
+        document.getElementById('saat').value = now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
+        const stored = localStorage.getItem('ybu_v22');
+        if (stored) { hastaListesi = JSON.parse(stored); listeGuncelle(); }
+    });
+
+    document.getElementById('imvCheck').addEventListener('change', function() {
+        document.getElementById('imvModBox').classList.toggle('hidden', !this.checked);
+    });
+
+    function getV(id) { return document.getElementById(id).value.trim(); }
+    function setV(id, val) { document.getElementById(id).value = val || ''; }
+    function getR(name) { let el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : ''; }
+    function setR(name, val) { let el = document.querySelector(`input[name="${name}"][value="${val}"]`); if(el) el.checked = true; }
+    function getC(name) { return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(e => e.value); }
+    function setC(name, vals) { if(!vals) return; document.querySelectorAll(`input[name="${name}"]`).forEach(el => { if(vals.includes(el.value)) el.checked = true; }); }
+
+    function kaydet() {
+        let bilincler = getC('bilinc_combo');
+        if(bilincler.length === 0) bilincler = [getR('bilinc_single')];
+        
+        let v = {
+            tarih: getV('tarih'), saat: getV('saat'), yatak: getV('yatakNo'), id: getV('hastaID'),
+            hb: getV('labHb'), wbc: getV('labWbc'), plt: getV('labPlt'), krea: getV('labKrea'), pro: getV('labPro'), alb: getV('labAlb'), digL: getV('labDiger'),
+            vazo: {
+                nor: { c: document.getElementById('c_nor').checked, d: getV('d_nor') },
+                dop: { c: document.getElementById('c_dop').checked, d: getV('d_dop') },
+                dob: { c: document.getElementById('c_dob').checked, d: getV('d_dob') },
+                adr: { c: document.getElementById('c_adr').checked, d: getV('d_adr') }
+            },
+            akc: getC('akc'), sek: getV('sekresyon'), solT: getR('solTuru'), vMod: getR('vMod'),
+            bil: bilincler.filter(b => b), gks: getV('gks'), pupil: getR('pupil'), sed: getV('sedasyonInfo'),
+            bs: getR('bs'), gaita: getR('gaita'), gaiG: getV('gaitaGun'),
+            enf: getV('enfOdak'), 
+            ilaçlar: [
+                {n: getV('ab1'), g: getV('ab1G')}, {n: getV('ab2'), g: getV('ab2G')}, {n: getV('ab3'), g: getV('ab3G')},
+                {n: getV('afung'), g: getV('afungG')}, {n: getV('avir'), g: getV('avirG')}
+            ],
+            renal: getR('renal'), sivi: getV('sivi'), 
+            bes: getR('bes'), besU: getV('besUrun'), besH: getV('besHiz'),
+            anti: getV('anti'), kons: getV('kons'), plan: getV('plan')
+        };
+        hastaListesi.push(v);
+        localStorage.setItem('ybu_v22', JSON.stringify(hastaListesi));
+        listeGuncelle();
+        formuTemizle();
+    }
+
+    function listeGuncelle() {
+        let l = document.getElementById('liste'); l.innerHTML = '';
+        hastaListesi.forEach((h, i) => {
+            l.innerHTML += `<div style="padding:8px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center;">
+                <span>Yatak ${h.yatak} - ${h.id}</span>
+                <div>
+                    <button class="edit-btn" onclick="duzenle(${i})">✎ DÜZELT</button>
+                    <button onclick="sil(${i})" style="color:red; border:none; background:none; font-weight:bold;">X</button>
+                </div>
+            </div>`;
+        });
+    }
+
+    function duzenle(i) {
+        let h = hastaListesi[i];
+        formuTemizle();
+        setV('tarih', h.tarih); setV('saat', h.saat); setV('yatakNo', h.yatak); setV('hastaID', h.id);
+        setV('labHb', h.hb); setV('labWbc', h.wbc); setV('labPlt', h.plt); setV('labKrea', h.krea); setV('labPro', h.pro); setV('labAlb', h.alb); setV('labDiger', h.digL);
+        document.getElementById('c_nor').checked = h.vazo.nor.c; setV('d_nor', h.vazo.nor.d);
+        document.getElementById('c_dop').checked = h.vazo.dop.c; setV('d_dop', h.vazo.dop.d);
+        document.getElementById('c_dob').checked = h.vazo.dob.c; setV('d_dob', h.vazo.dob.d);
+        document.getElementById('c_adr').checked = h.vazo.adr.c; setV('d_adr', h.vazo.adr.d);
+        setC('akc', h.akc); setV('sekresyon', h.sek); setR('solTuru', h.solT); setR('vMod', h.vMod);
+        if(h.solT === 'IMV') document.getElementById('imvModBox').classList.remove('hidden');
+        if(h.bil.some(b => ["Açık", "Oryante", "Koopere"].includes(b))) setC('bilinc_combo', h.bil);
+        else setR('bilinc_single', h.bil[0]);
+        setV('gks', h.gks); setR('pupil', h.pupil); setV('sedasyonInfo', h.sed);
+        setR('bs', h.bs); setR('gaita', h.gaita); setV('gaitaGun', h.gaiG);
+        setV('enfOdak', h.enf);
+        setV('ab1', h.ilaçlar[0].n); setV('ab1G', h.ilaçlar[0].g);
+        setV('ab2', h.ilaçlar[1].n); setV('ab2G', h.ilaçlar[1].g);
+        setV('ab3', h.ilaçlar[2].n); setV('ab3G', h.ilaçlar[2].g);
+        setV('afung', h.ilaçlar[3].n); setV('afungG', h.ilaçlar[3].g);
+        setV('avir', h.ilaçlar[4].n); setV('avirG', h.ilaçlar[4].g);
+        setR('renal', h.renal); setV('sivi', h.sivi); setR('bes', h.bes); setV('besUrun', h.besU); setV('besHiz', h.besH);
+        setV('anti', h.anti); setV('kons', h.kons); setV('plan', h.plan);
+        sil(i); window.scrollTo(0,0);
+    }
+
+    function wordAktar() {
+        let doc = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body style='font-family:Arial; font-size:11pt;'>";
+        hastaListesi.forEach(x => {
+            let p = `<h3>Yatak ${x.yatak} / ${x.id} (${x.tarih} ${x.saat})</h3><p>`;
+            
+            let labs = [];
+            if(x.hb) labs.push(`Hb: ${x.hb}`);
+            if(x.wbc) labs.push(`WBC: ${parseFloat(x.wbc)*1000}`);
+            if(x.plt) labs.push(`PLT: ${parseFloat(x.plt)*1000}`);
+            if(x.krea) labs.push(`Krea: ${x.krea}`);
+            if(x.pro) labs.push(`Prok: ${x.pro}`);
+            if(x.alb) labs.push(`Alb: ${x.alb}`);
+            if(labs.length || x.digL) p += labs.join(', ') + (x.digL ? '. ' + x.digL : '') + '. ';
+
+            let vStr = [];
+            if(x.vazo.nor.c) vStr.push(`Noradrenalin (${x.vazo.nor.d} mcg/kg/d)`);
+            if(x.vazo.dop.c) vStr.push(`Dopamin (${x.vazo.dop.d} mg/kg/d)`);
+            if(x.vazo.dob.c) vStr.push(`Dobutamin (${x.vazo.dob.d} mg/kg/d)`);
+            if(x.vazo.adr.c) vStr.push(`Adrenalin (${x.vazo.adr.d} mcg/kg/d)`);
+            if(vStr.length) p += vStr.join(', ') + ' infüzyonu alıyor. ';
+
+            let akcSes = x.akc.length > 0 ? (x.akc.includes('Ral') ? 'Akciğerlerinde raller mevcut' : 'Akciğer sesleri ' + x.akc.join(', ')) : 'Akciğer sesleri doğal';
+            p += akcSes + '. ' + (x.sek ? x.sek + '. ' : '');
+            
+            if(x.solT === 'Spontan') {
+                p += 'Spontan solunumda. ';
+            } else if(x.solT === 'Nazal') {
+                p += 'Nazal oksijen desteğinde. ';
+            } else if(x.solT) {
+                p += x.solT + (x.vMod ? ' ('+x.vMod+')' : '') + ' desteğinde. ';
+            }
+
+            let bilincler = x.bil.join(', ');
+            p += 'Bilinç ' + bilincler + '. ' + (x.gks ? 'GKS: '+x.gks + '. ' : '') + (x.pupil ? 'Pupiller ' + x.pupil + '. ' : '') + (x.sed ? x.sed + ' infüzyonu altında. ' : '');
+            p += 'Barsak sesleri ' + (x.bs === 'Normal' ? 'normal' : x.bs) + '. Gaita ' + (x.gaita || '') + (x.gaiG ? ' ('+x.gaiG+'. günü)' : '') + '. ';
+            
+            let renalStr = x.renal === 'Spontan' ? 'Spontan idrar çıkışı mevcut' : (x.renal ? x.renal + " tedavisi uygulandı" : '');
+            p += renalStr + '. Sıvı dengesi: ' + (x.sivi || 'takipte') + '. ';
+            
+            if(x.bes) {
+                if(x.bes === "Aç") {
+                    p += "Hasta aç. ";
+                } else {
+                    p += (x.besU ? x.besU + ' ile beslenme sağlandı' : x.bes + ' besleniyor');
+                    if(x.besH) p += ' (' + x.besH + ' cc/saat hızında)';
+                    p += '. ';
+                }
+            }
+
+            let ilaçar = x.ilaçlar.filter(i => i.n).map(i => `${i.n} (${i.g}. gün)`).join(', ');
+            if(x.enf || ilaçar) p += (x.enf ? 'Enfeksiyon odağı: ' + x.enf + '. ' : '') + (ilaçar ? 'Tedavi: ' + ilaçar + '. ' : '');
+            
+            if(x.anti) p += x.anti + ' uygulandı. ';
+            if(x.kons) p += x.kons + ' danışıldı. ';
+            if(x.plan) p += x.plan;
+
+            p += ' Hastanın bakımları yapılmıştır.</p><hr>';
+            doc += p;
+        });
+        let blob = new Blob([doc + "</body></html>"], {type:'application/msword'});
+        let link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "ybu_vizit_v22.doc"; link.click();
+    }
+    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v22', JSON.stringify(hastaListesi)); listeGuncelle(); }
+    function listeSil() { if(confirm('Tüm listeyi silmek istediğinize emin misiniz?')) { hastaListesi = []; localStorage.removeItem('ybu_v22'); listeGuncelle(); } }
+    function formuTemizle() { 
+        document.querySelectorAll('input[type=text], input[type=number], textarea').forEach(i => i.value=''); 
+        document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(r => r.checked = false);
+        document.getElementById('imvModBox').classList.add('hidden');
+    }
+</script>
+</body>
+</html>
