@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YBÜ İzlem Paneli v34</title>
+    <title>YBÜ İzlem Paneli v35 FINAL</title>
     <style>
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
         body { margin: 0; padding: 5px; background: #f0f4f8; font-size: 14px; }
@@ -30,7 +30,7 @@
 </head>
 <body>
 <div class="panel">
-    <h1>🏥 YBÜ İZLEM PANELİ v34</h1>
+    <h1>🏥 YBÜ İZLEM PANELİ v35 FINAL</h1>
 
     <div class="row grid-2">
         <input type="date" id="tarih" tabindex="1">
@@ -163,14 +163,14 @@
         <input type="number" id="besH" placeholder="Doz cc/sa" tabindex="28">
     </div>
 
-    <h3>📋 PLAN</h3>
+    <h3>📋 PLAN & YAPILACAKLAR</h3>
     <div class="row" style="grid-template-columns: 0.4fr 0.6fr 1fr;">
         <label style="background:#e9ecef; padding:8px; border-radius:5px;"><input type="checkbox" id="c_enox"> Enox</label>
         <input type="text" id="enoxNot" placeholder="Enox Notu" tabindex="29">
         <input type="text" id="anti" placeholder="Diğer Antikoag." tabindex="30">
     </div>
     <input type="text" id="kons" placeholder="Konsültasyonlar" tabindex="31">
-    <textarea id="plan" rows="2" placeholder="Yapılacaklar / Notlar..." tabindex="32"></textarea>
+    <textarea id="plan" rows="2" placeholder="Yapılacak işler / Notlar..." tabindex="32"></textarea>
 
     <div class="btn-group">
         <button class="btn" style="background:#28a745" onclick="kaydet()" tabindex="33">KAYDET</button>
@@ -185,21 +185,15 @@
 </div>
 
 <script>
-    const MAIN_KEY = 'ybu_vizit_ana_data';
+    const MAIN_KEY = 'ybu_final_data_pool';
     let hastaListesi = [];
 
     window.onload = () => {
         const n = new Date();
         document.getElementById('tarih').value = n.toISOString().split('T')[0];
         document.getElementById('saat').value = n.getHours().toString().padStart(2,'0')+":"+n.getMinutes().toString().padStart(2,'0');
-        
-        // Veri kurtarma ve yükleme
-        const saved = localStorage.getItem(MAIN_KEY) || localStorage.getItem('ybu_v33_list');
-        if(saved) { 
-            hastaListesi = JSON.parse(saved); 
-            localStorage.setItem(MAIN_KEY, saved); // Yeni anahtara taşı
-            listeGuncelle(); 
-        }
+        const saved = localStorage.getItem(MAIN_KEY);
+        if(saved) { hastaListesi = JSON.parse(saved); listeGuncelle(); }
     };
 
     document.querySelectorAll('input[name="solTuru"]').forEach(el => {
@@ -256,7 +250,7 @@
         h.resp.akc.forEach(v => { let el = document.querySelector(`input[name="akc"][value="${v}"]`); if(el) el.checked = true; });
         setR('solTuru', h.resp.tur); setR('vMod', h.resp.mod);
         setR('bs', h.gi.bs); setR('gaita', h.gi.gai); setV('gaitaGun', h.gi.gaiG); setR('ekst', h.ext);
-        setV('ab1', h.enf.ab1); setV('ab1G', h.enf.ab1g); setV('ab2', h.enf.ab2); setV('ab2G', h.enf.ab2g);
+        setV('ab1', h.enf.ab1); setV('ab1G', h.enf.ab1g); setV('ab2', h.enf.ab2); setV('ab2G', h.enf.ab2g); setV('ab3', h.enf.ab3); setV('ab3G', h.enf.ab3g);
         setV('afung', h.enf.af); setV('afungG', h.enf.afg); setV('avir', h.enf.av); setV('avirG', h.enf.avg);
         setR('renal', h.renal.tur); setV('ald', h.renal.ald); setV('cik', h.renal.cik);
         setR('bes', h.bes.tur); setV('besU', h.bes.urun); setV('besH', h.bes.hiz);
@@ -271,6 +265,7 @@
         let doc = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body style='font-family:Arial; font-size:11pt;'>";
         hastaListesi.forEach(x => {
             let p = `<h3>Yatak ${x.yatak} / ${x.konum} (${x.tarih})</h3><p>`;
+            
             let labs = []; 
             if(x.lab.hb) labs.push(`Hb: ${x.lab.hb} g/dL`); 
             if(x.lab.wbc) labs.push(`WBC: ${parseFloat(x.lab.wbc)*1000} /µL`); 
@@ -278,23 +273,37 @@
             if(x.lab.kre) labs.push(`Krea: ${x.lab.kre} mg/dL`); 
             if(x.lab.pro) labs.push(`Prok: ${x.lab.pro} ng/mL`); 
             if(x.lab.alb) labs.push(`Alb: ${x.lab.alb} g/L`); 
-            if(labs.length) p += labs.join(', ') + '. ' + (x.lab.dig || '') + '. ';
+            if(labs.length) p += labs.join(', ') + '. ' + (x.lab.dig ? x.lab.dig + '. ' : '');
             
             let vStr = [];
-            if(x.vazo.nor.c) vStr.push(`Noradrenalin (${x.vazo.nor.d} mcg/kg/d)`);
-            if(x.vazo.dop.c) vStr.push(`Dopamin (${x.vazo.dop.d} mg/kg/d)`);
-            if(x.vazo.dob.c) vStr.push(`Dobutamin (${x.vazo.dob.d} mg/kg/d)`);
-            if(x.vazo.adr.c) vStr.push(`Adrenalin (${x.vazo.adr.d} mcg/kg/d)`);
+            if(x.vazo.nor.c && x.vazo.nor.d) vStr.push(`Noradrenalin (${x.vazo.nor.d} mcg/kg/d)`);
+            if(x.vazo.dop.c && x.vazo.dop.d) vStr.push(`Dopamin (${x.vazo.dop.d} mg/kg/d)`);
+            if(x.vazo.dob.c && x.vazo.dob.d) vStr.push(`Dobutamin (${x.vazo.dob.d} mg/kg/d)`);
+            if(x.vazo.adr.c && x.vazo.adr.d) vStr.push(`Adrenalin (${x.vazo.adr.d} mcg/kg/d)`);
             if(vStr.length) p += vStr.join(', ') + ' infüzyonu alıyor. ';
 
-            p += (x.resp.akc.includes('Doğal') ? 'Akciğer sesleri doğal. ' : 'Akciğerlerde ' + x.resp.akc.join(', ') + ' mevcut. ');
-            p += (x.resp.tur === 'Spontan' ? 'Spontan solunumda. ' : x.resp.tur + (x.resp.mod ? ' ('+x.resp.mod+')' : '') + ' desteğinde. ');
-            p += 'Bilinç ' + x.neuro.bil.join(', ') + '. GKS: ' + x.neuro.gks + '. Pupiller ' + (x.neuro.pup || '') + '. Ekstremiteler ' + (x.ext || 'doğal') + '. ';
-            p += 'Barsak sesleri ' + (x.gi.bs || 'normal') + '. Gaita ' + (x.gi.gai || 'normal') + (x.gi.gaiG ? ' ('+x.gi.gaiG+'. günü)' : '') + '. ';
-            p += 'Renal: ' + x.renal.tur + '. Aldığı: ' + (x.renal.ald || '0') + ' cc / Çıkardığı: ' + (x.renal.cik || '0') + ' cc. ';
+            if(x.resp.akc.length) p += (x.resp.akc.includes('Doğal') ? 'Akciğer sesleri doğal. ' : 'Akciğerlerde ' + x.resp.akc.join(', ') + ' mevcut. ');
             
-            if(x.bes.tur === 'Aç') p += 'Hasta aç. '; 
-            else p += (x.bes.urun || x.bes.tur) + ' ile beslenme sağlandı' + (x.bes.hiz ? ' ('+x.bes.hiz+' cc/saat hızında)' : '') + '. ';
+            if(x.resp.tur) {
+                if(x.resp.tur === 'Spontan') p += 'Spontan solunumda. ';
+                else if(x.resp.tur === 'Trakeotomi') p += 'Trakeostomili. ';
+                else p += x.resp.tur + (x.resp.mod ? ' ('+x.resp.mod+')' : '') + ' desteğinde. ';
+            }
+
+            if(x.neuro.bil.length) p += 'Bilinç ' + x.neuro.bil.join(', ') + '. ';
+            if(x.neuro.gks) p += 'GKS: ' + x.neuro.gks + '. ';
+            if(x.neuro.pup) p += 'Pupiller ' + x.neuro.pup + '. ';
+            if(x.ext) p += 'Ekstremiteler ' + x.ext + '. ';
+            if(x.gi.bs) p += 'Barsak sesleri ' + x.gi.bs + '. ';
+            if(x.gi.gai) p += 'Gaita ' + x.gi.gai + (x.gi.gaiG ? ' ('+x.gi.gaiG+'. günü)' : '') + '. ';
+            
+            if(x.renal.tur) p += 'Renal: ' + x.renal.tur + '. ';
+            if(x.renal.ald || x.renal.cik) p += 'Aldığı: ' + (x.renal.ald || '0') + ' cc / Çıkardığı: ' + (x.renal.cik || '0') + ' cc. ';
+            
+            if(x.bes.tur) {
+                if(x.bes.tur === 'Aç') p += 'Hasta aç. '; 
+                else p += (x.bes.urun || x.bes.tur) + ' ile beslenme sağlandı' + (x.bes.hiz ? ' ('+x.bes.hiz+' cc/saat hızında)' : '') + '. ';
+            }
 
             let abler = [];
             if(x.enf.ab1) abler.push(`${x.enf.ab1} (${x.enf.ab1g || 1}. gün)`);
@@ -302,19 +311,21 @@
             if(x.enf.ab3) abler.push(`${x.enf.ab3} (${x.enf.ab3g || 1}. gün)`);
             if(x.enf.af) abler.push(`${x.enf.af} (${x.enf.afg || 1}. gün)`);
             if(x.enf.av) abler.push(`${x.enf.av} (${x.enf.avg || 1}. gün)`);
-            if(abler.length) p += 'Tedavi: ' + abler.join(', ') + '. ';
+            p += (abler.length ? 'Tedavi: ' + abler.join(', ') + '. ' : 'Antibiyotik almıyor. ');
             
-            if(x.plan.enox) p += 'Enox (' + (x.plan.enoxN || '') + ') uygulandı. ';
+            if(x.plan.enox) p += 'Enox' + (x.plan.enoxN ? ' ('+x.plan.enoxN+')' : '') + ' uygulandı. ';
             if(x.plan.anti) p += x.plan.anti + ' aldı. ';
             if(x.plan.kons) p += x.plan.kons + " 'a danışıldı. "; 
-            p += x.plan.not + ' Bakımları yapılmıştır.</p><hr>'; doc += p;
+            if(x.plan.not) p += x.plan.not + '. ';
+
+            p += ' Bakımları yapılmıştır.</p><hr>'; doc += p;
         });
         const blob = new Blob([doc], {type:'application/msword'});
         const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "vizit_raporu.doc"; link.click();
     }
 
     function isListesiAktar() {
-        let doc = "<html><head><meta charset='utf-8'></head><body><h2>İŞ LİSTESİ</h2>";
+        let doc = "<html><head><meta charset='utf-8'></head><body><h2 style='color:#1e466e;'>İŞ LİSTESİ</h2>";
         hastaListesi.forEach((h, i) => {
             let t = []; 
             if(h.plan.enox) t.push("Enox " + (h.plan.enoxN || '')); 
@@ -334,7 +345,8 @@
         if(last) { 
             setV('hastaKonum', last.konum); setV('gks', last.neuro.gks); 
             last.neuro.bil.forEach(v => { let el = document.querySelector(`input[value="${v}"]`); if(el) el.checked = true; });
-            setV('ab1', last.enf.ab1); setV('ab2', last.enf.ab2); alert("Hafızadan veriler yüklendi."); 
+            setV('ab1', last.enf.ab1); setV('ab1G', last.enf.ab1g); setV('ab2', last.enf.ab2); setV('ab2G', last.enf.ab2g); 
+            setV('ab3', last.enf.ab3); setV('ab3G', last.enf.ab3g); alert("Hafızadan veriler yüklendi."); 
         } else alert("Geçmiş veri bulunamadı.");
     }
 
