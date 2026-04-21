@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YBÜ İzlem Paneli v33 (Veri Korumalı)</title>
+    <title>YBÜ İzlem Paneli v34</title>
     <style>
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
         body { margin: 0; padding: 5px; background: #f0f4f8; font-size: 14px; }
@@ -30,7 +30,7 @@
 </head>
 <body>
 <div class="panel">
-    <h1>🏥 YBÜ İZLEM PANELİ v33</h1>
+    <h1>🏥 YBÜ İZLEM PANELİ v34</h1>
 
     <div class="row grid-2">
         <input type="date" id="tarih" tabindex="1">
@@ -57,7 +57,6 @@
         <label><input type="radio" name="bilinc_single" value="Koma"> Koma</label>
         <input type="number" id="gks" placeholder="GKS" style="width:50px;" tabindex="6">
     </div>
-    <input type="text" id="sedasyonInfo" placeholder="Sedasyon ve Dozu" tabindex="7" style="margin-top:5px;">
     <div class="check-group" style="margin-top:5px;">
         <label>Pupiller:</label>
         <label><input type="radio" name="pupil" value="İzokorik" id="p_izo"> İzo</label>
@@ -65,6 +64,7 @@
         <label><input type="radio" name="pupil" value="Miyozis"> Miyozis</label>
         <label><input type="radio" name="pupil" value="Midriyazis"> Midriyazis</label>
     </div>
+    <input type="text" id="sedasyonInfo" placeholder="Sedasyon ve Dozu" tabindex="7" style="margin-top:5px;">
 
     <h3>🔬 Laboratuvar</h3>
     <div class="row grid-3">
@@ -181,12 +181,11 @@
         <button class="btn" style="background:#0d6efd" onclick="wordAktar()">VİZİT RAPORU</button>
         <button class="btn" style="background:#ff8c00" onclick="isListesiAktar()">📝 İŞ LİSTESİ</button>
     </div>
-    <button class="btn" style="background:#dc3545; width:100%; margin-top:8px;" onclick="listeSil()">LİSTEYİ SIFIRLA</button>
+    <button class="btn" style="background:#dc3545; width:100%; margin-top:8px;" onclick="listeSil()">TEMİZLE & SIFIRLA</button>
 </div>
 
 <script>
-    // HAFIZA ANAHTARI SABİTLENDİ
-    const STORAGE_KEY = 'ybu_vizit_ana_data';
+    const MAIN_KEY = 'ybu_vizit_ana_data';
     let hastaListesi = [];
 
     window.onload = () => {
@@ -194,23 +193,13 @@
         document.getElementById('tarih').value = n.toISOString().split('T')[0];
         document.getElementById('saat').value = n.getHours().toString().padStart(2,'0')+":"+n.getMinutes().toString().padStart(2,'0');
         
-        // VERİ KURTARMA BOTU
-        const oldKeys = ['ybu_v32_list', 'ybu_v31_list', 'ybu_v30_list', 'ybu_v29_list'];
-        let recoveredData = localStorage.getItem(STORAGE_KEY);
-        
-        if(!recoveredData) {
-            for(let key of oldKeys) {
-                let oldData = localStorage.getItem(key);
-                if(oldData) {
-                    recoveredData = oldData;
-                    localStorage.setItem(STORAGE_KEY, oldData);
-                    console.log("Veriler "+key+" anahtarından kurtarıldı.");
-                    break;
-                }
-            }
+        // Veri kurtarma ve yükleme
+        const saved = localStorage.getItem(MAIN_KEY) || localStorage.getItem('ybu_v33_list');
+        if(saved) { 
+            hastaListesi = JSON.parse(saved); 
+            localStorage.setItem(MAIN_KEY, saved); // Yeni anahtara taşı
+            listeGuncelle(); 
         }
-        
-        if(recoveredData) { hastaListesi = JSON.parse(recoveredData); listeGuncelle(); }
     };
 
     document.querySelectorAll('input[name="solTuru"]').forEach(el => {
@@ -252,7 +241,7 @@
             plan: { enox: document.getElementById('c_enox').checked, enoxN: getV('enoxNot'), anti: getV('anti'), kons: getV('kons'), not: getV('plan') }
         };
         hastaListesi.push(v);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(hastaListesi));
+        localStorage.setItem(MAIN_KEY, JSON.stringify(hastaListesi));
         listeGuncelle(); formuTemizle();
     }
 
@@ -321,14 +310,14 @@
             p += x.plan.not + ' Bakımları yapılmıştır.</p><hr>'; doc += p;
         });
         const blob = new Blob([doc], {type:'application/msword'});
-        const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "vizit_raporu_v33.doc"; link.click();
+        const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "vizit_raporu.doc"; link.click();
     }
 
     function isListesiAktar() {
         let doc = "<html><head><meta charset='utf-8'></head><body><h2>İŞ LİSTESİ</h2>";
         hastaListesi.forEach((h, i) => {
             let t = []; 
-            if(h.plan.enox) t.push("Enox " + h.plan.enoxN); 
+            if(h.plan.enox) t.push("Enox " + (h.plan.enoxN || '')); 
             if(h.plan.anti) t.push(h.plan.anti); 
             if(h.plan.kons) t.push(h.plan.kons + " danışılacak"); 
             if(h.plan.not) t.push(h.plan.not);
@@ -340,15 +329,13 @@
 
     function sonVeriyiGetir() {
         const yNo = getV('yatakNo'); if(!yNo) return alert("Önce yatak no giriniz!");
-        const archive = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        const archive = JSON.parse(localStorage.getItem(MAIN_KEY) || '[]');
         const last = archive.filter(h => h.yatak === yNo).pop();
-        if(last) { duzenleHareketi(last); alert("Geçmiş veriler yüklendi."); } else alert("Veri bulunamadı.");
-    }
-
-    function duzenleHareketi(h) {
-        setV('yatakNo', h.yatak); setV('hastaKonum', h.konum); setV('gks', h.neuro.gks);
-        h.neuro.bil.forEach(v => { let el = document.querySelector(`input[value="${v}"]`); if(el) el.checked = true; });
-        setR('pupil', h.neuro.pup);
+        if(last) { 
+            setV('hastaKonum', last.konum); setV('gks', last.neuro.gks); 
+            last.neuro.bil.forEach(v => { let el = document.querySelector(`input[value="${v}"]`); if(el) el.checked = true; });
+            setV('ab1', last.enf.ab1); setV('ab2', last.enf.ab2); alert("Hafızadan veriler yüklendi."); 
+        } else alert("Geçmiş veri bulunamadı.");
     }
 
     function listeGuncelle() {
@@ -357,8 +344,8 @@
             l.innerHTML += `<div class="list-item"><span>Yatak ${h.yatak} - ${h.konum}</span><div><button class="edit-btn" onclick="duzenle(${i})">✎ DÜZELT</button><button onclick="sil(${i})" style="color:red;border:none;background:none;font-weight:bold;">X</button></div></div>`;
         });
     }
-    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem(STORAGE_KEY, JSON.stringify(hastaListesi)); listeGuncelle(); }
-    function listeSil() { if(confirm('Sıfırla?')) { hastaListesi = []; localStorage.removeItem(STORAGE_KEY); listeGuncelle(); } }
+    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem(MAIN_KEY, JSON.stringify(hastaListesi)); listeGuncelle(); }
+    function listeSil() { if(confirm('Sıfırla?')) { hastaListesi = []; localStorage.removeItem(MAIN_KEY); listeGuncelle(); } }
     function formuTemizle() { document.querySelectorAll('input, select, textarea').forEach(i => { if(i.id!=='tarih'&&i.id!=='saat') {i.value=''; i.checked=false;} }); document.getElementById('imvModBox').classList.add('hidden'); }
 </script>
 </body>
