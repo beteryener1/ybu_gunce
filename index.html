@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YBÜ İzlem Paneli v32</title>
+    <title>YBÜ İzlem Paneli v33 (Veri Korumalı)</title>
     <style>
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
         body { margin: 0; padding: 5px; background: #f0f4f8; font-size: 14px; }
@@ -30,7 +30,7 @@
 </head>
 <body>
 <div class="panel">
-    <h1>🏥 YBÜ İZLEM PANELİ v32</h1>
+    <h1>🏥 YBÜ İZLEM PANELİ v33</h1>
 
     <div class="row grid-2">
         <input type="date" id="tarih" tabindex="1">
@@ -69,8 +69,8 @@
     <h3>🔬 Laboratuvar</h3>
     <div class="row grid-3">
         <input type="number" step="0.1" id="labHb" placeholder="Hb" tabindex="8">
-        <input type="number" step="0.1" id="labWbc" placeholder="WBC" max="999" tabindex="9">
-        <input type="number" step="0.1" id="labPlt" placeholder="PLT" max="999" tabindex="10">
+        <input type="number" step="0.1" id="labWbc" placeholder="WBC" tabindex="9">
+        <input type="number" step="0.1" id="labPlt" placeholder="PLT" tabindex="10">
         <input type="number" step="0.01" id="labKrea" placeholder="Krea" tabindex="11">
         <input type="number" step="0.01" id="labPro" placeholder="Prok" tabindex="12">
         <input type="number" step="0.1" id="labAlb" placeholder="Alb" tabindex="13">
@@ -185,14 +185,32 @@
 </div>
 
 <script>
+    // HAFIZA ANAHTARI SABİTLENDİ
+    const STORAGE_KEY = 'ybu_vizit_ana_data';
     let hastaListesi = [];
 
     window.onload = () => {
         const n = new Date();
         document.getElementById('tarih').value = n.toISOString().split('T')[0];
         document.getElementById('saat').value = n.getHours().toString().padStart(2,'0')+":"+n.getMinutes().toString().padStart(2,'0');
-        const stored = localStorage.getItem('ybu_v32_list');
-        if(stored) { hastaListesi = JSON.parse(stored); listeGuncelle(); }
+        
+        // VERİ KURTARMA BOTU
+        const oldKeys = ['ybu_v32_list', 'ybu_v31_list', 'ybu_v30_list', 'ybu_v29_list'];
+        let recoveredData = localStorage.getItem(STORAGE_KEY);
+        
+        if(!recoveredData) {
+            for(let key of oldKeys) {
+                let oldData = localStorage.getItem(key);
+                if(oldData) {
+                    recoveredData = oldData;
+                    localStorage.setItem(STORAGE_KEY, oldData);
+                    console.log("Veriler "+key+" anahtarından kurtarıldı.");
+                    break;
+                }
+            }
+        }
+        
+        if(recoveredData) { hastaListesi = JSON.parse(recoveredData); listeGuncelle(); }
     };
 
     document.querySelectorAll('input[name="solTuru"]').forEach(el => {
@@ -234,8 +252,7 @@
             plan: { enox: document.getElementById('c_enox').checked, enoxN: getV('enoxNot'), anti: getV('anti'), kons: getV('kons'), not: getV('plan') }
         };
         hastaListesi.push(v);
-        localStorage.setItem('ybu_v32_list', JSON.stringify(hastaListesi));
-        localStorage.setItem('ybu_v32_archive', JSON.stringify(hastaListesi));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(hastaListesi));
         listeGuncelle(); formuTemizle();
     }
 
@@ -304,7 +321,7 @@
             p += x.plan.not + ' Bakımları yapılmıştır.</p><hr>'; doc += p;
         });
         const blob = new Blob([doc], {type:'application/msword'});
-        const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "vizit_raporu_v32.doc"; link.click();
+        const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "vizit_raporu_v33.doc"; link.click();
     }
 
     function isListesiAktar() {
@@ -323,13 +340,15 @@
 
     function sonVeriyiGetir() {
         const yNo = getV('yatakNo'); if(!yNo) return alert("Önce yatak no giriniz!");
-        const archive = JSON.parse(localStorage.getItem('ybu_v32_archive') || '[]');
+        const archive = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
         const last = archive.filter(h => h.yatak === yNo).pop();
-        if(last) { 
-            setV('hastaKonum', last.konum); setV('gks', last.neuro.gks); 
-            last.neuro.bil.forEach(v => { let el = document.querySelector(`input[value="${v}"]`); if(el) el.checked = true; });
-            setV('ab1', last.enf.ab1); setV('ab2', last.enf.ab2); alert("Dünkü veriler yüklendi."); 
-        } else alert("Veri bulunamadı.");
+        if(last) { duzenleHareketi(last); alert("Geçmiş veriler yüklendi."); } else alert("Veri bulunamadı.");
+    }
+
+    function duzenleHareketi(h) {
+        setV('yatakNo', h.yatak); setV('hastaKonum', h.konum); setV('gks', h.neuro.gks);
+        h.neuro.bil.forEach(v => { let el = document.querySelector(`input[value="${v}"]`); if(el) el.checked = true; });
+        setR('pupil', h.neuro.pup);
     }
 
     function listeGuncelle() {
@@ -338,8 +357,8 @@
             l.innerHTML += `<div class="list-item"><span>Yatak ${h.yatak} - ${h.konum}</span><div><button class="edit-btn" onclick="duzenle(${i})">✎ DÜZELT</button><button onclick="sil(${i})" style="color:red;border:none;background:none;font-weight:bold;">X</button></div></div>`;
         });
     }
-    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem('ybu_v32_list', JSON.stringify(hastaListesi)); listeGuncelle(); }
-    function listeSil() { if(confirm('Sıfırla?')) { hastaListesi = []; localStorage.removeItem('ybu_v32_list'); listeGuncelle(); } }
+    function sil(i) { hastaListesi.splice(i,1); localStorage.setItem(STORAGE_KEY, JSON.stringify(hastaListesi)); listeGuncelle(); }
+    function listeSil() { if(confirm('Sıfırla?')) { hastaListesi = []; localStorage.removeItem(STORAGE_KEY); listeGuncelle(); } }
     function formuTemizle() { document.querySelectorAll('input, select, textarea').forEach(i => { if(i.id!=='tarih'&&i.id!=='saat') {i.value=''; i.checked=false;} }); document.getElementById('imvModBox').classList.add('hidden'); }
 </script>
 </body>
