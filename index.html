@@ -525,6 +525,7 @@
             <button class="btn" style="background:var(--p600)" onclick="wordAktar()">📄 VİZİT RAPORU</button>
             <button class="btn" style="background:var(--gold)" onclick="isListesiAktar()">📝 İŞ LİSTESİ</button>
         </div>
+        <button class="btn" style="background:var(--red); width:100%; margin-top:8px;" onclick="tumunuSil()">🗑 Tüm Kayıtları Sil</button>
     </div>
     </div>
 </div>
@@ -868,6 +869,14 @@ function isListesiAktar() {
     link.href = URL.createObjectURL(blob);
     link.download = `is_listesi_${hedefTarih}.doc`;
     link.click();
+}
+
+function tumunuSil() {
+    if (confirm('Tüm kayıtlar silinsin mi? Bu işlem geri alınamaz.')) {
+        hastaListesi = [];
+        localStorage.removeItem(STORAGE_KEY);
+        listeGuncelle();
+    }
 }
 // ── PILL TOGGLE: sync .checked class on check-group labels ──
 function syncPills() {
